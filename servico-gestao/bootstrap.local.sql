@@ -1,4 +1,8 @@
-USE sql10806891;
+SET NAMES utf8mb4;
+
+CREATE DATABASE IF NOT EXISTS servico_gestao COLLATE 'utf8mb4_unicode_ci';
+
+USE servico_gestao;
 
 CREATE TABLE IF NOT EXISTS Plano (
     codigo INT(11) NOT NULL AUTO_INCREMENT,

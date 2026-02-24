@@ -1,0 +1,242 @@
+{
+  "info": {
+    "_postman_id": "0b5816dc-57e6-48b1-8057-278c74555b9b",
+    "name": "Serviço Gestão",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52640523",
+    "_collection_link": "https://go.postman.co/collection/52640523-0b5816dc-57e6-48b1-8057-278c74555b9b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Planos",
+      "item": [
+        {
+          "name": "Pesquisa de Todos os Planos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/planos",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "planos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa de Planos por Código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/planos/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "planos",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "1",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cadastro de Planos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nome\": \"Teste\",\r\n    \"custoMensal\": 10.00,\r\n    \"descricao\": \"Descrição\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/gestao/planos",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "planos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Plano",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nome\": \"Plano Básico\",\r\n    \"custoMensal\": 79.90,\r\n    \"descricao\": \"Ideal para pequenos negócios\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/gestao/planos/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "planos",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "1",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir Plano",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/planos/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "planos",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "6",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Pesquisa de Clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/clientes",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "clientes"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Assinaturas",
+      "item": [
+        {
+          "name": "Pesquisa de Assinaturas por Plano ou Cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/assinaturas/:tipo/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "assinaturas",
+                ":tipo",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "tipo",
+                  "value": "plano",
+                  "description": "cliente ou plano"
+                },
+                {
+                  "key": "codigo",
+                  "value": "1",
+                  "description": "código do plano ou cliente"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa de Assinaturas por Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/assinaturas/:status",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "assinaturas",
+                ":status"
+              ],
+              "variable": [
+                {
+                  "key": "status",
+                  "value": "todos",
+                  "description": "ativo, cancelado ou todos"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "URL",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

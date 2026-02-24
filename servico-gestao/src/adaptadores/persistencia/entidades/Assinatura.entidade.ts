@@ -9,6 +9,7 @@ import Plano from './Plano.entidade';
 import Cliente from './Cliente.entidade';
 
 enum AssinaturaStatus {
+  TODOS = 'Todos',
   CANCELADO = 'Cancelado',
   ATIVO = 'Ativo',
 }

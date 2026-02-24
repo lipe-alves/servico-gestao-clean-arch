@@ -9,7 +9,7 @@ set "DB_NAME=servico_gestao"
 echo Iniciando atualizacao do sistema...
 
 echo Executando o script SQL de bootstrap (bootstrap.local.sql)...
-mysql -h %DB_HOST% -u %DB_USER% -p%DB_PASS% %DB_NAME% < bootstrap.local.sql
+mysql -h %DB_HOST% -u %DB_USER% -p%DB_PASS% < bootstrap.local.sql
 
 echo Configuracao do banco de dados concluida!
 
