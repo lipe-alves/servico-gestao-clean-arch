@@ -149,7 +149,7 @@
       "name": "Clientes",
       "item": [
         {
-          "name": "Pesquisa de Clientes",
+          "name": "Pesquisa de Todos os Clientes",
           "request": {
             "method": "GET",
             "header": [],
@@ -161,6 +161,120 @@
               "path": [
                 "gestao",
                 "clientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa de Clientes por Código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/clientes/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "clientes",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "1",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cadastro de Clientes",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nome\": \"Fulano de Tal\",\r\n    \"email\": \"fulano@email.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/gestao/clientes",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "clientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Cliente",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nome\": \"Fulano Ciclano\",\r\n    \"email\": \"fulano@email.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/gestao/clientes/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "clientes",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "11",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir Cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/clientes/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "clientes",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "11",
+                  "description": "numérico"
+                }
               ]
             }
           },
@@ -228,6 +342,94 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Cadastro de Assinaturas",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"codCliente\": 1,\r\n    \"codPlano\": 1,\r\n    \"status\": \"Ativo\",\r\n    \"inicioFidelidade\": \"2025-01-10T03:00:00.000Z\",\r\n    \"fimFidelidade\": \"2026-01-10T03:00:00.000Z\",\r\n    \"custoFinal\": 49.90,\r\n    \"descricao\": \"Assinatura anual do plano básico\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/gestao/assinaturas",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "assinaturas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Assinatura",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"codCliente\": 1,\r\n    \"codPlano\": 1,\r\n    \"status\": \"Ativo\",\r\n    \"inicioFidelidade\": \"2025-01-10T03:00:00.000Z\",\r\n    \"fimFidelidade\": \"2026-01-10T03:00:00.000Z\",\r\n    \"custoFinal\": 49.90,\r\n    \"descricao\": \"Assinatura anual do plano básico\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/gestao/assinaturas/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "assinaturas",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "11",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Excluir Assinatura",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/assinaturas/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "assinaturas",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "11",
+                  "description": "numérico"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }
@@ -235,7 +437,7 @@
   "variable": [
     {
       "key": "URL",
-      "value": "",
+      "value": "http://localhost:3000",
       "type": "default"
     }
   ]

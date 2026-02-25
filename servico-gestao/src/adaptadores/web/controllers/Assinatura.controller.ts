@@ -185,6 +185,7 @@ class AssinaturaController extends ControllerBase {
   @Delete("/:idAssinatura")
   public async deleteAssinatura(@Param("idAssinatura") id) {
     try {
+      if (!ehNumerico(id)) throw new Error("O id deve ser um número!");
       await this.excluirAssinaturaCasoUso.executar(id);
       return this.sucesso("Exclusão efetuada com sucesso!");
     } catch (err) {

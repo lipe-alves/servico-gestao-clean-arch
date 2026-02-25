@@ -1,19 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import ICasoUso from 'src/aplicacao/interfaces/CasoUso.interface';
-import ClienteServico from 'src/dominios/servicos/Cliente.servico';
+import { Injectable } from "@nestjs/common";
+import ICasoUso from "src/aplicacao/interfaces/CasoUso.interface";
+import AssinaturaServico from "src/dominios/servicos/Assinatura.servico";
 
 @Injectable()
-class ExcluirClienteCasoUso implements ICasoUso {
-  private readonly clienteServico: ClienteServico;
+class ExcluirAssinaturaCasoUso implements ICasoUso {
+  private readonly assinaturaServico: AssinaturaServico;
 
-  public constructor(clienteServico: ClienteServico) {
-    this.clienteServico = clienteServico;
+  public constructor(AssinaturaServico: AssinaturaServico) {
+    this.assinaturaServico = AssinaturaServico;
   }
 
   public async executar(id: number): Promise<void> {
-    await this.clienteServico.excluir(id);
+    await this.assinaturaServico.excluir(id);
   }
 }
 
-export default ExcluirClienteCasoUso;
-export { ExcluirClienteCasoUso };
+export default ExcluirAssinaturaCasoUso;
+export { ExcluirAssinaturaCasoUso };

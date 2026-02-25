@@ -49,9 +49,9 @@ class ClienteController extends ControllerBase {
     }
   }
 
-  @Get("/:idPlano")
+  @Get("/:idCliente")
   public async getPlano(
-    @Param("idPlano")
+    @Param("idCliente")
     id,
   ) {
     try {
