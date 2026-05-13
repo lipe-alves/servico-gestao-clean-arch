@@ -1,4 +1,4 @@
-import { Json } from './tipos';
+import { Json } from '../../comuns/tipos';
 
 class ModeloBase<E extends object> {
   protected dados: E;

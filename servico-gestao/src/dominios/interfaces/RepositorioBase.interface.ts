@@ -5,7 +5,7 @@ interface IRepositorioBase<T> {
   onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean,
+    valor: string | number | boolean
   ): IRepositorioBase<T>;
   ou(): IRepositorioBase<T>;
   ordenarPor(campo: string, direcao: Direcao): IRepositorioBase<T>;

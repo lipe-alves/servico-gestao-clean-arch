@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import ICasoUso from 'src/aplicacao/interfaces/CasoUso.interface';
 import ClienteServico from 'src/dominios/servicos/Cliente.servico';
 import ClienteModelo from 'src/dominios/modelos/Cliente.modelo';
+import { ClienteNaoEncontradoException } from 'src/dominios/excecoes/cliente';
 
 @Injectable()
 class BuscarClientesCasoUso implements ICasoUso {
@@ -17,6 +18,9 @@ class BuscarClientesCasoUso implements ICasoUso {
       return clientes;
     } else {
       const cliente = await this.clienteServico.buscarPorId(id);
+      if (!cliente) {
+        throw new ClienteNaoEncontradoException();
+      }
       return [cliente];
     }
   }

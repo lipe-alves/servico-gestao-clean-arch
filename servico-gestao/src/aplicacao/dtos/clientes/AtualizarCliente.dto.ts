@@ -1,12 +1,6 @@
-export interface AtualizarClienteDto {
-  nome?: string;
-  email?: string;
-}
+import { z } from 'zod';
+import { CadastrarClienteDtoSchema } from './CadastrarCliente.dto';
 
-export function validarAtualizarClienteDto(
-  dados: any,
-): dados is AtualizarClienteDto {
-  if (dados.nome && typeof dados.nome !== 'string') return false;
-  if (dados.email && typeof dados.email !== 'string') return false;
-  return true;
-}
+export const AtualizarClienteDtoSchema = CadastrarClienteDtoSchema.partial();
+
+export type AtualizarClienteDto = z.infer<typeof AtualizarClienteDtoSchema>;

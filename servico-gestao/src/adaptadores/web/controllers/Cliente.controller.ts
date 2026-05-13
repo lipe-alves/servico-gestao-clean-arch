@@ -6,17 +6,27 @@ import {
   Post,
   Param,
   Patch,
-} from "@nestjs/common";
-import ControllerBase from "src/comuns/ControllerBase";
+  UsePipes,
+  ParseIntPipe,
+} from '@nestjs/common';
+import ControllerBase from 'src/adaptadores/web/base/ControllerBase';
 
-import BuscarClienteCasoUso from "src/aplicacao/casos-uso/clientes/BuscarClientes.casoUso";
-import CadastrarClienteCasoUso from "src/aplicacao/casos-uso/clientes/CadastrarCliente.casoUso";
-import { validarCadastrarClienteDto } from "src/aplicacao/dtos/clientes/CadastrarCliente.dto";
-import ExcluirClienteCasoUso from "src/aplicacao/casos-uso/clientes/ExcluirCliente.casoUso";
-import AtualizarClienteCasoUso from "src/aplicacao/casos-uso/clientes/AtualizarCliente.casoUso";
-import { validarAtualizarClienteDto } from "src/aplicacao/dtos/clientes/AtualizarCliente.dto";
+import BuscarClienteCasoUso from 'src/aplicacao/casos-uso/clientes/BuscarClientes.casoUso';
+import CadastrarClienteCasoUso from 'src/aplicacao/casos-uso/clientes/CadastrarCliente.casoUso';
+import {
+  CadastrarClienteDto,
+  CadastrarClienteDtoSchema,
+} from 'src/aplicacao/dtos/clientes/CadastrarCliente.dto';
+import ExcluirClienteCasoUso from 'src/aplicacao/casos-uso/clientes/ExcluirCliente.casoUso';
+import AtualizarClienteCasoUso from 'src/aplicacao/casos-uso/clientes/AtualizarCliente.casoUso';
+import {
+  AtualizarClienteDto,
+  AtualizarClienteDtoSchema,
+} from 'src/aplicacao/dtos/clientes/AtualizarCliente.dto';
 
-@Controller("/gestao/clientes")
+import ValidatorPipe from 'src/adaptadores/web/pipes/Validator.pipe';
+
+@Controller('/gestao/clientes')
 class ClienteController extends ControllerBase {
   private readonly buscarClientesCasoUso: BuscarClienteCasoUso;
   private readonly cadastrarClienteCasoUso: CadastrarClienteCasoUso;
@@ -27,7 +37,7 @@ class ClienteController extends ControllerBase {
     buscarClientesCasoUso: BuscarClienteCasoUso,
     cadastrarClienteCasoUso: CadastrarClienteCasoUso,
     excluirClienteCasoUso: ExcluirClienteCasoUso,
-    atualizarClienteCasoUso: AtualizarClienteCasoUso,
+    atualizarClienteCasoUso: AtualizarClienteCasoUso
   ) {
     super();
     this.buscarClientesCasoUso = buscarClientesCasoUso;
@@ -38,82 +48,46 @@ class ClienteController extends ControllerBase {
 
   @Get()
   public async getClientes() {
-    try {
-      const clientes = await this.buscarClientesCasoUso.executar(); // Busca todos
-      return this.sucesso(
-        "Consulta realizada com sucesso!",
-        clientes.map((cliente) => cliente.paraJson()),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    const clientes = await this.buscarClientesCasoUso.executar(); // Busca todos
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      clientes.map((cliente) => cliente.paraJson())
+    );
   }
 
-  @Get("/:idCliente")
+  @Get('/:idCliente')
   public async getPlano(
-    @Param("idCliente")
-    id,
+    @Param('idCliente', ParseIntPipe)
+    id: number
   ) {
-    try {
-      const [cliente] = await this.buscarClientesCasoUso.executar(id);
-      return this.sucesso(
-        "Consulta realizada com sucesso!",
-        cliente.paraJson(),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    const [cliente] = await this.buscarClientesCasoUso.executar(id);
+    return this.sucesso('Consulta realizada com sucesso!', cliente.paraJson());
   }
 
   @Post()
-  public async postCliente(
-    @Body()
-    dados,
+  @UsePipes(new ValidatorPipe(CadastrarClienteDtoSchema, 'body'))
+  public async postCliente(@Body() dados: CadastrarClienteDto) {
+    const cliente = await this.cadastrarClienteCasoUso.executar(dados);
+    return this.sucesso('Cadastro efetuado com sucesso!', cliente.paraJson());
+  }
+
+  @Patch('/:idCliente')
+  @UsePipes(new ValidatorPipe(AtualizarClienteDtoSchema, 'body'))
+  public async patchCliente(
+    @Param('idCliente', ParseIntPipe) id: number,
+    @Body() dados: AtualizarClienteDto
   ) {
-    try {
-      if (!validarCadastrarClienteDto(dados)) {
-        throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
-        );
-      }
-
-      const cliente = await this.cadastrarClienteCasoUso.executar(dados);
-      return this.sucesso("Cadastro efetuado com sucesso!", cliente.paraJson());
-    } catch (err) {
-      return this.falha(err);
-    }
+    const cliente = await this.atualizarClienteCasoUso.executar(id, dados);
+    return this.sucesso('Atualizção efetuada com sucesso!', cliente.paraJson());
   }
 
-  @Patch("/:idCliente")
-  public async patchCliente(@Param("idCliente") id, @Body() dados) {
-    try {
-      if (!validarAtualizarClienteDto(dados)) {
-        throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
-        );
-      }
-
-      const cliente = await this.atualizarClienteCasoUso.executar(id, dados);
-      return this.sucesso(
-        "Atualizção efetuada com sucesso!",
-        cliente.paraJson(),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
-  }
-
-  @Delete("/:idCliente")
+  @Delete('/:idCliente')
   public async deleteCliente(
-    @Param("idCliente")
-    id,
+    @Param('idCliente', ParseIntPipe)
+    id: number
   ) {
-    try {
-      await this.excluirClienteCasoUso.executar(id);
-      return this.sucesso("Exclusão efetuada com sucesso!");
-    } catch (err) {
-      return this.falha(err);
-    }
+    await this.excluirClienteCasoUso.executar(id);
+    return this.sucesso('Exclusão efetuada com sucesso!');
   }
 }
 

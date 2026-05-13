@@ -6,24 +6,31 @@ import {
   Post,
   Param,
   Patch,
-} from "@nestjs/common";
-import ControllerBase from "src/comuns/ControllerBase";
+  ParseIntPipe,
+  UsePipes,
+} from '@nestjs/common';
 
-import BuscarAssinaturaCasoUso from "src/aplicacao/casos-uso/assinaturas/BuscarAssinaturas.casoUso";
+import ControllerBase from 'src/adaptadores/web/base/ControllerBase';
+
+import BuscarAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/BuscarAssinaturas.casoUso';
+import CadastrarAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/CadastrarAssinatura.casoUso';
 import {
-  BuscarAssinaturasDto,
-  validarBuscarAssinaturasDto,
-} from "src/aplicacao/dtos/assinaturas/BuscarAssinaturas.dto";
-import CadastrarAssinaturaCasoUso from "src/aplicacao/casos-uso/assinaturas/CadastrarAssinatura.casoUso";
-import { validarCadastrarAssinaturaDto } from "src/aplicacao/dtos/assinaturas/CadastrarAssinatura.dto";
-import ExcluirAssinaturaCasoUso from "src/aplicacao/casos-uso/assinaturas/ExcluirAssinatura.casoUso";
-import AtualizarAssinaturaCasoUso from "src/aplicacao/casos-uso/assinaturas/AtualizarAssinatura.casoUso";
-import { validarAtualizarAssinaturaDto } from "src/aplicacao/dtos/assinaturas/AtualizarAssinatura.dto";
+  CadastrarAssinaturaDto,
+  CadastrarAssinaturaDtoSchema,
+} from 'src/aplicacao/dtos/assinaturas/CadastrarAssinatura.dto';
+import ExcluirAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/ExcluirAssinatura.casoUso';
+import AtualizarAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/AtualizarAssinatura.casoUso';
+import {
+  AtualizarAssinaturaDto,
+  AtualizarAssinaturaDtoSchema,
+} from 'src/aplicacao/dtos/assinaturas/AtualizarAssinatura.dto';
 
-import ehNumerico from "src/comuns/utils/ehNumerico";
-import capitalizar from "src/comuns/utils/capitalizar";
+import capitalizar from 'src/comuns/utils/capitalizar';
 
-@Controller("/gestao/assinaturas")
+import { AssinaturaStatus } from 'src/adaptadores/persistencia/entidades/Assinatura.entidade';
+import ValidatorPipe from '../pipes/Validator.pipe';
+
+@Controller('/gestao/assinaturas')
 class AssinaturaController extends ControllerBase {
   private readonly buscarAssinaturasCasoUso: BuscarAssinaturaCasoUso;
   private readonly cadastrarAssinaturaCasoUso: CadastrarAssinaturaCasoUso;
@@ -34,7 +41,7 @@ class AssinaturaController extends ControllerBase {
     buscarAssinaturasCasoUso: BuscarAssinaturaCasoUso,
     cadastrarAssinaturaCasoUso: CadastrarAssinaturaCasoUso,
     excluirAssinaturaCasoUso: ExcluirAssinaturaCasoUso,
-    atualizarAssinaturaCasoUso: AtualizarAssinaturaCasoUso,
+    atualizarAssinaturaCasoUso: AtualizarAssinaturaCasoUso
   ) {
     super();
     this.buscarAssinaturasCasoUso = buscarAssinaturasCasoUso;
@@ -45,152 +52,117 @@ class AssinaturaController extends ControllerBase {
 
   @Get()
   public async getAssinaturas() {
-    try {
-      const assinaturas = await this.buscarAssinaturasCasoUso.executar(); // Busca todos
-      return this.sucesso(
-        "Consulta realizada com sucesso!",
-        assinaturas.map((assinatura) => assinatura.paraJson()),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    const assinaturas = await this.buscarAssinaturasCasoUso.executar(); // Busca todos
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      assinaturas.map((assinatura) => assinatura.paraJson())
+    );
   }
 
-  @Get("/:statusOuCodigo")
-  public async getAssinatura(
-    @Param("statusOuCodigo")
-    statusOuCodigo,
+  @Get('/todos')
+  public async getTodasAssinaturas() {
+    return this.getAssinaturas();
+  }
+
+  @Get('/ativo')
+  public async getAssinaturasAtivas() {
+    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
+      status: AssinaturaStatus.ATIVO,
+    });
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      assinaturas.map((assinatura) => assinatura.paraJson())
+    );
+  }
+
+  @Get('/cancelado')
+  public async getAssinaturasCanceladas() {
+    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
+      status: AssinaturaStatus.CANCELADO,
+    });
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      assinaturas.map((assinatura) => assinatura.paraJson())
+    );
+  }
+
+  @Get('/:idAssinatura')
+  public async getAssinaturaPorId(
+    @Param('idAssinatura', ParseIntPipe)
+    id: number
   ) {
-    try {
-      const params: any = {};
-
-      if (ehNumerico(statusOuCodigo)) {
-        params.codigo = Number(statusOuCodigo);
-
-        if (!validarBuscarAssinaturasDto(params)) {
-          throw new Error(
-            "Parâmetros incorretos. Verifique a documentação da API.",
-          );
-        }
-
-        const [assinatura] =
-          await this.buscarAssinaturasCasoUso.executar(params);
-        return this.sucesso(
-          "Consulta realizada com sucesso!",
-          assinatura.paraJson(),
-        );
-      }
-
-      params.status = capitalizar(statusOuCodigo);
-
-      if (!validarBuscarAssinaturasDto(params)) {
-        throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
-        );
-      }
-
-      const assinaturas = await this.buscarAssinaturasCasoUso.executar(params);
-
-      return this.sucesso(
-        "Consulta realizada com sucesso!",
-        assinaturas.map((assinatura) => assinatura.paraJson()),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    const [assinatura] = await this.buscarAssinaturasCasoUso.executar({
+      codigo: id,
+    });
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      assinatura.paraJson()
+    );
   }
 
-  @Get("/cliente/:codCliente")
+  @Get('/cliente/:codCliente')
   public async getAssinaturasCliente(
-    @Param("codCliente")
-    codCliente,
+    @Param('codCliente', ParseIntPipe)
+    codCliente: number
   ) {
-    try {
-      const assinaturas = await this.buscarAssinaturasCasoUso.executar({
-        codCliente,
-      });
+    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
+      codCliente,
+    });
 
-      return this.sucesso(
-        "Consulta realizada com sucesso!",
-        assinaturas.map((assinatura) => assinatura.paraJson()),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      assinaturas.map((assinatura) => assinatura.paraJson())
+    );
   }
 
-  @Get("/plano/:codPlano")
+  @Get('/plano/:codPlano')
   public async getAssinaturasPlano(
-    @Param("codPlano")
-    codPlano,
+    @Param('codPlano', ParseIntPipe)
+    codPlano: number
   ) {
-    try {
-      const assinaturas = await this.buscarAssinaturasCasoUso.executar({
-        codPlano,
-      });
+    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
+      codPlano,
+    });
 
-      return this.sucesso(
-        "Consulta realizada com sucesso!",
-        assinaturas.map((assinatura) => assinatura.paraJson()),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    return this.sucesso(
+      'Consulta realizada com sucesso!',
+      assinaturas.map((assinatura) => assinatura.paraJson())
+    );
   }
 
   @Post()
+  @UsePipes(new ValidatorPipe(CadastrarAssinaturaDtoSchema, 'body'))
   public async postAssinatura(
     @Body()
-    dados,
+    dados: CadastrarAssinaturaDto
   ) {
-    try {
-      if (!validarCadastrarAssinaturaDto(dados)) {
-        throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
-        );
-      }
-
-      const assinatura = await this.cadastrarAssinaturaCasoUso.executar(dados);
-      return this.sucesso(
-        "Cadastro efetuado com sucesso!",
-        assinatura.paraJson(),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+    const assinatura = await this.cadastrarAssinaturaCasoUso.executar(dados);
+    return this.sucesso(
+      'Cadastro efetuado com sucesso!',
+      assinatura.paraJson()
+    );
   }
 
-  @Patch("/:idAssinatura")
-  public async patchAssinatura(@Param("idAssinatura") id, @Body() dados) {
-    try {
-      if (!validarAtualizarAssinaturaDto(dados)) {
-        throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
-        );
-      }
-
-      const assinatura = await this.atualizarAssinaturaCasoUso.executar(
-        id,
-        dados,
-      );
-      return this.sucesso(
-        "Atualizção efetuada com sucesso!",
-        assinatura.paraJson(),
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+  @Patch('/:idAssinatura')
+  @UsePipes(new ValidatorPipe(AtualizarAssinaturaDtoSchema, 'body'))
+  public async patchAssinatura(
+    @Param('idAssinatura', ParseIntPipe) id: number,
+    @Body() dados: AtualizarAssinaturaDto
+  ) {
+    const assinatura = await this.atualizarAssinaturaCasoUso.executar(
+      id,
+      dados
+    );
+    return this.sucesso(
+      'Atualizção efetuada com sucesso!',
+      assinatura.paraJson()
+    );
   }
 
-  @Delete("/:idAssinatura")
-  public async deleteAssinatura(@Param("idAssinatura") id) {
-    try {
-      if (!ehNumerico(id)) throw new Error("O id deve ser um número!");
-      await this.excluirAssinaturaCasoUso.executar(id);
-      return this.sucesso("Exclusão efetuada com sucesso!");
-    } catch (err) {
-      return this.falha(err);
-    }
+  @Delete('/:idAssinatura')
+  public async deleteAssinatura(@Param('idAssinatura', ParseIntPipe) id) {
+    await this.excluirAssinaturaCasoUso.executar(id);
+    return this.sucesso('Exclusão efetuada com sucesso!');
   }
 }
 

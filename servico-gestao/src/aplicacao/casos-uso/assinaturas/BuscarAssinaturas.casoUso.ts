@@ -7,6 +7,9 @@ import PlanoServico from 'src/dominios/servicos/Plano.servico';
 
 import AssinaturaModelo from 'src/dominios/modelos/Assinatura.modelo';
 import { BuscarAssinaturasDto } from 'src/aplicacao/dtos/assinaturas/BuscarAssinaturas.dto';
+import { ClienteNaoEncontradoException } from 'src/dominios/excecoes/cliente';
+import { PlanoNaoEncontradoException } from 'src/dominios/excecoes/plano';
+import { AssinaturaNaoEncontradaException } from 'src/dominios/excecoes/assinatura';
 
 @Injectable()
 class BuscarAssinaturasCasoUso implements ICasoUso {
@@ -24,22 +27,31 @@ class BuscarAssinaturasCasoUso implements ICasoUso {
     this.planoServico = planoServico;
   }
 
-  public async executar(params: BuscarAssinaturasDto = {}): Promise<AssinaturaModelo[]> {
+  public async executar(
+    params: BuscarAssinaturasDto = {}
+  ): Promise<AssinaturaModelo[]> {
     if (!params.codigo) {
       if (params.codCliente) {
-        const cliente = await this.clienteServico.buscarPorId(params.codCliente);
-        if (!cliente) throw new Error("Cliente não encontrado!");
+        const cliente = await this.clienteServico.buscarPorId(
+          params.codCliente
+        );
+        if (!cliente) throw new ClienteNaoEncontradoException();
       }
 
       if (params.codPlano) {
         const plano = await this.planoServico.buscarPorId(params.codPlano);
-        if (!plano) throw new Error("Plano não encontrado!");
+        if (!plano) throw new PlanoNaoEncontradoException();
       }
 
       const assinaturas = await this.assinaturaServico.buscar(params);
       return assinaturas;
     } else {
-      const assinatura = await this.assinaturaServico.buscarPorId(params.codigo);
+      const assinatura = await this.assinaturaServico.buscarPorId(
+        params.codigo
+      );
+      if (!assinatura) {
+        throw new AssinaturaNaoEncontradaException();
+      }
       return [assinatura];
     }
   }

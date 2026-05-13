@@ -1,12 +1,8 @@
-export interface CadastrarClienteDto {
-  nome: string;
-  email: string;
-}
+import { z } from 'zod';
 
-export function validarCadastrarClienteDto(
-  dados: any,
-): dados is CadastrarClienteDto {
-  if (typeof dados.nome !== 'string') return false;
-  if (typeof dados.email !== 'string') return false;
-  return true;
-}
+export const CadastrarClienteDtoSchema = z.object({
+  nome: z.string(),
+  email: z.email(),
+});
+
+export type CadastrarClienteDto = z.infer<typeof CadastrarClienteDtoSchema>;

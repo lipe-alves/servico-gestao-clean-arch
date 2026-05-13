@@ -6,18 +6,18 @@ import {
   Post,
   Param,
   Patch,
-} from "@nestjs/common";
-import ControllerBase from "src/comuns/ControllerBase";
+} from '@nestjs/common';
+import ControllerBase from 'src/adaptadores/web/base/ControllerBase';
 
-import BuscarPlanoCasoUso from "src/aplicacao/casos-uso/planos/BuscarPlanos.casoUso";
-import CadastrarPlanoCasoUso from "src/aplicacao/casos-uso/planos/CadastrarPlano.casoUso";
-import { validarCadastrarPlanoDto } from "src/aplicacao/dtos/planos/CadastrarPlano.dto";
-import ExcluirPlanoCasoUso from "src/aplicacao/casos-uso/planos/ExcluirPlano.casoUso";
-import AtualizarPlanoCasoUso from "src/aplicacao/casos-uso/planos/AtualizarPlano.casoUso";
-import { validarAtualizarPlanoDto } from "src/aplicacao/dtos/planos/AtualizarPlano.dto";
-import ehNumerico from "src/comuns/utils/ehNumerico";
+import BuscarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/BuscarPlanos.casoUso';
+import CadastrarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/CadastrarPlano.casoUso';
+import { validarCadastrarPlanoDto } from 'src/aplicacao/dtos/planos/CadastrarPlano.dto';
+import ExcluirPlanoCasoUso from 'src/aplicacao/casos-uso/planos/ExcluirPlano.casoUso';
+import AtualizarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/AtualizarPlano.casoUso';
+import { validarAtualizarPlanoDto } from 'src/aplicacao/dtos/planos/AtualizarPlano.dto';
+import ehNumerico from 'src/comuns/utils/ehNumerico';
 
-@Controller("/gestao/planos")
+@Controller('/gestao/planos')
 class PlanoController extends ControllerBase {
   private readonly buscarPlanosCasoUso: BuscarPlanoCasoUso;
   private readonly cadastrarPlanoCasoUso: CadastrarPlanoCasoUso;
@@ -28,7 +28,7 @@ class PlanoController extends ControllerBase {
     buscarPlanosCasoUso: BuscarPlanoCasoUso,
     cadastrarPlanoCasoUso: CadastrarPlanoCasoUso,
     excluirPlanoCasoUso: ExcluirPlanoCasoUso,
-    atualizarPlanoCasoUso: AtualizarPlanoCasoUso,
+    atualizarPlanoCasoUso: AtualizarPlanoCasoUso
   ) {
     super();
     this.buscarPlanosCasoUso = buscarPlanosCasoUso;
@@ -42,26 +42,26 @@ class PlanoController extends ControllerBase {
     try {
       const planos = await this.buscarPlanosCasoUso.executar(); // Busca todos
       return this.sucesso(
-        "Consulta realizada com sucesso!",
-        planos.map((plano) => plano.paraJson()),
+        'Consulta realizada com sucesso!',
+        planos.map((plano) => plano.paraJson())
       );
     } catch (err) {
       return this.falha(err);
     }
   }
 
-  @Get("/:idPlano")
+  @Get('/:idPlano')
   public async getPlano(
-    @Param("idPlano")
-    id,
+    @Param('idPlano')
+    id
   ) {
     try {
-      if (!ehNumerico(id)) throw new Error("O id deve ser um número!");
+      if (!ehNumerico(id)) throw new Error('O id deve ser um número!');
 
       const [plano] = await this.buscarPlanosCasoUso.executar(id);
-      if (!plano) throw new Error("Plano não encontrado!");
+      if (!plano) throw new Error('Plano não encontrado!');
 
-      return this.sucesso("Consulta realizada com sucesso!", plano.paraJson());
+      return this.sucesso('Consulta realizada com sucesso!', plano.paraJson());
     } catch (err) {
       return this.falha(err);
     }
@@ -70,49 +70,49 @@ class PlanoController extends ControllerBase {
   @Post()
   public async postPlano(
     @Body()
-    dados,
+    dados
   ) {
     try {
       if (!validarCadastrarPlanoDto(dados)) {
         throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
+          'Parâmetros incorretos. Verifique a documentação da API.'
         );
       }
 
       const plano = await this.cadastrarPlanoCasoUso.executar(dados);
-      return this.sucesso("Cadastro efetuado com sucesso!", plano.paraJson());
+      return this.sucesso('Cadastro efetuado com sucesso!', plano.paraJson());
     } catch (err) {
       return this.falha(err);
     }
   }
 
-  @Patch("/:idPlano")
-  public async patchPlano(@Param("idPlano") id, @Body() dados) {
+  @Patch('/:idPlano')
+  public async patchPlano(@Param('idPlano') id, @Body() dados) {
     try {
-      if (!ehNumerico(id)) throw new Error("O id deve ser um número!");
+      if (!ehNumerico(id)) throw new Error('O id deve ser um número!');
 
       if (!validarAtualizarPlanoDto(dados)) {
         throw new Error(
-          "Parâmetros incorretos. Verifique a documentação da API.",
+          'Parâmetros incorretos. Verifique a documentação da API.'
         );
       }
 
       const plano = await this.atualizarPlanoCasoUso.executar(id, dados);
-      return this.sucesso("Atualizção efetuada com sucesso!", plano.paraJson());
+      return this.sucesso('Atualizção efetuada com sucesso!', plano.paraJson());
     } catch (err) {
       return this.falha(err);
     }
   }
 
-  @Delete("/:idPlano")
+  @Delete('/:idPlano')
   public async deletePlano(
-    @Param("idPlano")
-    id,
+    @Param('idPlano')
+    id
   ) {
     try {
-      if (!ehNumerico(id)) throw new Error("O id deve ser um número!");
+      if (!ehNumerico(id)) throw new Error('O id deve ser um número!');
       await this.excluirPlanoCasoUso.executar(id);
-      return this.sucesso("Exclusão efetuada com sucesso!");
+      return this.sucesso('Exclusão efetuada com sucesso!');
     } catch (err) {
       return this.falha(err);
     }

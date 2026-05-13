@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import RepositorioBase from 'src/comuns/RepositorioBase';
+import { Repository } from 'typeorm';
+import RepositorioBase from 'src/adaptadores/persistencia/base/RepositorioBase';
 import Cliente from '../entidades/Cliente.entidade';
 
 @Injectable()
 class ClienteRepositorio extends RepositorioBase<Cliente> {
   public constructor(
     @InjectRepository(Cliente)
-    repo
+    repo: Repository<Cliente>
   ) {
     super(Cliente, repo);
   }

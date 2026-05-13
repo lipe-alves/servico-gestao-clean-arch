@@ -1,19 +1,20 @@
-import IRepositorioBase from '../dominios/interfaces/RepositorioBase.interface';
+import IRepositorioBase from '../interfaces/RepositorioBase.interface';
 import IServicoBase, {
   Operador,
   Direcao,
-} from '../dominios/interfaces/ServicoBase.interface';
+} from '../interfaces/ServicoBase.interface';
 import ModeloBase from './ModeloBase';
 
-class ServicoBase<E extends object, M extends ModeloBase<E>>
-  implements IServicoBase<E, M>
-{
+class ServicoBase<
+  E extends object,
+  M extends ModeloBase<E>,
+> implements IServicoBase<E, M> {
   protected readonly repositorio: IRepositorioBase<E>;
   protected readonly criarModelo: (entidade: E) => M;
 
   public constructor(
     repositorio: IRepositorioBase<E>,
-    criarModelo: (entidade: E) => M,
+    criarModelo: (entidade: E) => M
   ) {
     this.repositorio = repositorio;
     this.criarModelo = criarModelo;
@@ -22,7 +23,7 @@ class ServicoBase<E extends object, M extends ModeloBase<E>>
   public onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean,
+    valor: string | number | boolean
   ): this {
     this.repositorio.onde(campo, operador, valor);
     return this;
@@ -51,14 +52,14 @@ class ServicoBase<E extends object, M extends ModeloBase<E>>
 
   public async atualizar(id: number, dados: Partial<E>): Promise<M> {
     const item = await this.buscarPorId(id);
-    if (!item) throw new Error("Entidade não encontrada!");
+    if (!item) throw new Error('Entidade não encontrada!');
     const atualizado = await this.repositorio.atualizar(id, dados);
     return this.criarModelo(atualizado);
   }
 
   public async excluir(id: number): Promise<void> {
     const item = await this.buscarPorId(id);
-    if (!item) throw new Error("Entidade não encontrada!");
+    if (!item) throw new Error('Entidade não encontrada!');
     await this.repositorio.excluir(id);
   }
 

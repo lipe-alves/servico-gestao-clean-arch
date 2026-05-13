@@ -3,7 +3,7 @@ import {
   IRepositorioBase,
   Operador,
   Direcao,
-} from '../dominios/interfaces/RepositorioBase.interface';
+} from '../../../dominios/interfaces/RepositorioBase.interface';
 
 class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
   private readonly repositorio: Repository<T>;
@@ -20,7 +20,7 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
   public onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean,
+    valor: string | number | boolean
   ): IRepositorioBase<T> {
     const parametro = `${campo}_${Math.random().toString(36).substring(2, 8)}`;
     const condicao = this.montarCondicao(campo, operador, parametro);
@@ -43,7 +43,7 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
   public ordenarPor(campo: string, direcao: Direcao): IRepositorioBase<T> {
     this.queryBuilder.addOrderBy(
       `${this.alias}.${campo}`,
-      direcao.toUpperCase() as 'ASC' | 'DESC',
+      direcao.toUpperCase() as 'ASC' | 'DESC'
     );
     return this;
   }
@@ -87,7 +87,7 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
   private montarCondicao(
     campo: string,
     operador: Operador,
-    parametro: string,
+    parametro: string
   ): string {
     const coluna = `${this.alias}.${campo}`;
     switch (operador) {

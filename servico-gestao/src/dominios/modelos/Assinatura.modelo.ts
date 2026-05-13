@@ -1,6 +1,8 @@
-import ModeloBase from 'src/comuns/ModeloBase';
+import ModeloBase from 'src/dominios/base/ModeloBase';
 import { Json } from 'src/comuns/tipos';
-import AssinaturaEntidade, { AssinaturaStatus } from 'src/adaptadores/persistencia/entidades/Assinatura.entidade';
+import AssinaturaEntidade, {
+  AssinaturaStatus,
+} from 'src/adaptadores/persistencia/entidades/Assinatura.entidade';
 
 class AssinaturaModelo extends ModeloBase<AssinaturaEntidade> {
   public get codigo() {

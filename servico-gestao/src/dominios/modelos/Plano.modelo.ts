@@ -1,4 +1,4 @@
-import ModeloBase from 'src/comuns/ModeloBase';
+import ModeloBase from 'src/dominios/base/ModeloBase';
 import { Json } from 'src/comuns/tipos';
 import PlanoEntidade from 'src/adaptadores/persistencia/entidades/Plano.entidade';
 

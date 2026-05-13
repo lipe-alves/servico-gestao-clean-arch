@@ -1,24 +1,17 @@
-import { AssinaturaStatus } from "src/adaptadores/persistencia/entidades/Assinatura.entidade";
+import { z } from 'zod';
 
-export interface CadastrarAssinaturaDto {
-  codPlano: number;
-  codCliente: number;
-  inicioFidelidade: string;
-  fimFidelidade: string;
-  custoFinal: number;
-  descricao: string;
-  status: AssinaturaStatus;
-}
+import { AssinaturaStatus } from 'src/adaptadores/persistencia/entidades/Assinatura.entidade';
 
-export function validarCadastrarAssinaturaDto(
-  dados: any,
-): dados is CadastrarAssinaturaDto {
-  if (typeof dados.codPlano !== 'number') return false;
-  if (typeof dados.codCliente !== 'number') return false;
-  if (typeof dados.inicioFidelidade !== 'string') return false;
-  if (typeof dados.fimFidelidade !== 'string') return false;
-  if (typeof dados.custoFinal !== 'number') return false;
-  if (dados.descricao && typeof dados.descricao !== 'string') return false;
-  if (typeof dados.status !== 'string') return false;
-  return true;
-}
+export const CadastrarAssinaturaDtoSchema = z.object({
+  codPlano: z.coerce.number(),
+  codCliente: z.coerce.number(),
+  inicioFidelidade: z.coerce.date(),
+  fimFidelidade: z.coerce.date(),
+  custoFinal: z.coerce.number(),
+  descricao: z.string(),
+  status: z.enum([AssinaturaStatus.ATIVO, AssinaturaStatus.CANCELADO]),
+});
+
+export type CadastrarAssinaturaDto = z.infer<
+  typeof CadastrarAssinaturaDtoSchema
+>;

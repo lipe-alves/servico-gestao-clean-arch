@@ -2,13 +2,13 @@ import IRepositorioBase, {
   Operador,
   Direcao,
 } from './RepositorioBase.interface';
-import ModeloBase from 'src/comuns/ModeloBase';
+import ModeloBase from 'src/dominios/base/ModeloBase';
 
 interface IServicoBase<E extends object, M extends ModeloBase<E>> {
   onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean,
+    valor: string | number | boolean
   ): IServicoBase<E, M>;
   ou(): IServicoBase<E, M>;
   ordenarPor(campo: string, direcao: Direcao): IServicoBase<E, M>;
