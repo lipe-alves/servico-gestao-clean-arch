@@ -55,7 +55,7 @@ Além da estrutura de camadas, foram aplicados:
 
 ## 4. Conclusão e Relato de Desenvolvimento
 ### Desafios Encontrados:
-- **Gestão de Validação de Dados via DTO:** Neste projeto, a validação de dados foi feita via DTO, o que tornou o processo de desenvolvimento mais seguro, porém, ligeiramente complexo. Existem formas melhores de implementar, como usando Zod, Yup, etc., mas o objetivo principal do projeto era demonstrar a arquitetura limpa e, portanto, o uso de DTOs.
+- **Gestão de Validação de Dados via DTO:** Neste projeto, a validação de dados foi feita via DTO, o que tornou o processo de desenvolvimento mais seguro, porém, ligeiramente complexo. Os DTOs foram construídos utilizando a biblioteca **Zod**, utilizando-se de pipes para transformar e validar os dados utilizando o DTO (Schema do Zod) passado.
 - **Criação de Classes Bases:** O uso de classes base (ex: `RepositorioBase` e `ServicoBase`) ajudou a diminuir a complexidade de construção de objetos e permitiu a comunicação entre camadas. Como tudo, o investimento inicial é mais demorado, mas, com o tempo, o benefícios se tornam notáveis.
 - **Criação de um Script Genérico para Setup de Ambiente de Desenvolvimento:** Foram criados dois arquivos `setup.cloud.cmd` e `setup.local.cmd` para facilitar o setup de ambiente local e na nuvem, respectivamente. Houve diversos problemas de permissão do Windows e encoding em que o terminal executa o SQL (SET NAMES no início do SQL resolveu o problema).
 
