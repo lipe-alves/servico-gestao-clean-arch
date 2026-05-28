@@ -3,6 +3,7 @@ import ICasoUso from 'src/aplicacao/interfaces/CasoUso.interface';
 import ClienteServico from 'src/dominios/servicos/Cliente.servico';
 import ClienteModelo from 'src/dominios/modelos/Cliente.modelo';
 import { ClienteNaoEncontradoException } from 'src/dominios/excecoes/cliente';
+import { BuscarClientesDto } from 'src/aplicacao/dtos/clientes/BuscarClientes.dto';
 
 @Injectable()
 class BuscarClientesCasoUso implements ICasoUso {
@@ -12,12 +13,15 @@ class BuscarClientesCasoUso implements ICasoUso {
     this.clienteServico = clienteServico;
   }
 
-  public async executar(id?: number): Promise<ClienteModelo[]> {
-    if (!id) {
+  public async executar(
+    params: BuscarClientesDto = {}
+  ): Promise<ClienteModelo[]> {
+    const { codigo } = params;
+    if (!codigo) {
       const clientes = await this.clienteServico.buscar(); // Busca todos
       return clientes;
     } else {
-      const cliente = await this.clienteServico.buscarPorId(id);
+      const cliente = await this.clienteServico.buscarPorId(codigo);
       if (!cliente) {
         throw new ClienteNaoEncontradoException();
       }

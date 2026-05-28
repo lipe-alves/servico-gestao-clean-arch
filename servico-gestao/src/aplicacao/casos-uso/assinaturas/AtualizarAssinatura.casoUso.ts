@@ -8,7 +8,8 @@ import PlanoServico from 'src/dominios/servicos/Plano.servico';
 import AssinaturaModelo from 'src/dominios/modelos/Assinatura.modelo';
 import { AtualizarAssinaturaDto } from 'src/aplicacao/dtos/assinaturas/AtualizarAssinatura.dto';
 
-import validarData from 'src/comuns/utils/validarData';
+import { ClienteNaoEncontradoException } from 'src/dominios/excecoes/cliente';
+import { PlanoNaoEncontradoException } from 'src/dominios/excecoes/plano';
 
 @Injectable()
 class AtualizarAssinaturaCasoUso implements ICasoUso {
@@ -26,26 +27,28 @@ class AtualizarAssinaturaCasoUso implements ICasoUso {
     this.planoServico = planoServico;
   }
 
-  public async executar(id: number, input: AtualizarAssinaturaDto): Promise<AssinaturaModelo> {
-    if (typeof input.codCliente !== "undefined") {
+  public async executar({
+    id,
+    ...input
+  }: AtualizarAssinaturaDto): Promise<AssinaturaModelo> {
+    if (typeof input.codCliente !== 'undefined') {
       const cliente = await this.clienteServico.buscarPorId(input.codCliente);
-      if (!cliente) throw new Error("Cliente não encontrado!");
+      if (!cliente) throw new ClienteNaoEncontradoException();
     }
 
-    if (typeof input.codPlano !== "undefined") {
+    if (typeof input.codPlano !== 'undefined') {
       const plano = await this.planoServico.buscarPorId(input.codPlano);
-      if (!plano) throw new Error("Plano não encontrado!");
+      if (!plano) throw new PlanoNaoEncontradoException();
     }
-
-    if (typeof input.inicioFidelidade === "string" && !validarData(input.inicioFidelidade)) 
-      throw new Error("Data de início de fidelidade inválida!");
-    if (typeof input.fimFidelidade === "string" && !input.fimFidelidade) 
-      throw new Error("Data de fim de fidelidade inválida!");
 
     const assinatura = await this.assinaturaServico.atualizar(id, {
       ...input,
-      inicioFidelidade: input.inicioFidelidade ? new Date(input.inicioFidelidade) : undefined,
-      fimFidelidade: input.fimFidelidade ? new Date(input.fimFidelidade) : undefined,
+      inicioFidelidade: input.inicioFidelidade
+        ? new Date(input.inicioFidelidade)
+        : undefined,
+      fimFidelidade: input.fimFidelidade
+        ? new Date(input.fimFidelidade)
+        : undefined,
     });
 
     return assinatura;

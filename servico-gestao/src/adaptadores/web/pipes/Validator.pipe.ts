@@ -2,27 +2,23 @@ import {
   PipeTransform,
   Injectable,
   ArgumentMetadata,
-  Paramtype,
-  BadRequestException,
   HttpStatus,
 } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import z from 'zod';
-import IRespostaApi from '../interfaces/RespostaApi.interface';
 
 @Injectable()
 class ValidatorPipe implements PipeTransform {
   private schema: z.ZodObject<any>;
-  private type: Paramtype;
 
-  public constructor(schema: z.ZodObject<any>, type: Paramtype) {
+  public constructor(schema: z.ZodObject<any>) {
     this.schema = schema;
-    this.type = type;
   }
 
-  private traduzirErroZod(issue: z.ZodIssue): BadRequestException {
+  private traduzirErroZod(issue: z.ZodIssue): RpcException {
     const campo = issue.path.join('.');
 
-    return new BadRequestException({
+    return new RpcException({
       statusCode: HttpStatus.BAD_REQUEST,
       codigo: 'ERRO_VALIDACAO',
       mensagem: `Erro de validação no campo: ${campo}`,
@@ -31,11 +27,13 @@ class ValidatorPipe implements PipeTransform {
         detalhes: issue.message,
         codigo: issue.code,
       },
-    } as IRespostaApi);
+    });
   }
 
   public transform(value: any, metadata: ArgumentMetadata) {
-    if (metadata.type !== this.type) return value;
+    if (metadata.type !== 'body') {
+      return value;
+    }
 
     const resultado = this.schema.safeParse(value);
 

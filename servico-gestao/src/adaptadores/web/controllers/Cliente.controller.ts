@@ -1,33 +1,31 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Param,
-  Patch,
-  UsePipes,
-  ParseIntPipe,
-} from '@nestjs/common';
-import ControllerBase from 'src/adaptadores/web/base/ControllerBase';
+import { Controller, UsePipes } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MENSAGENS } from '@gestao-internet/comuns/constantes';
 
 import BuscarClienteCasoUso from 'src/aplicacao/casos-uso/clientes/BuscarClientes.casoUso';
+import {
+  BuscarClientesDto,
+  BuscarClientesDtoSchema,
+} from 'src/aplicacao/dtos/clientes/BuscarClientes.dto';
+
 import CadastrarClienteCasoUso from 'src/aplicacao/casos-uso/clientes/CadastrarCliente.casoUso';
 import {
   CadastrarClienteDto,
   CadastrarClienteDtoSchema,
 } from 'src/aplicacao/dtos/clientes/CadastrarCliente.dto';
-import ExcluirClienteCasoUso from 'src/aplicacao/casos-uso/clientes/ExcluirCliente.casoUso';
+
 import AtualizarClienteCasoUso from 'src/aplicacao/casos-uso/clientes/AtualizarCliente.casoUso';
 import {
   AtualizarClienteDto,
   AtualizarClienteDtoSchema,
 } from 'src/aplicacao/dtos/clientes/AtualizarCliente.dto';
 
+import ExcluirClienteCasoUso from 'src/aplicacao/casos-uso/clientes/ExcluirCliente.casoUso';
+
 import ValidatorPipe from 'src/adaptadores/web/pipes/Validator.pipe';
 
-@Controller('/gestao/clientes')
-class ClienteController extends ControllerBase {
+@Controller()
+class ClienteController {
   private readonly buscarClientesCasoUso: BuscarClienteCasoUso;
   private readonly cadastrarClienteCasoUso: CadastrarClienteCasoUso;
   private readonly excluirClienteCasoUso: ExcluirClienteCasoUso;
@@ -39,55 +37,40 @@ class ClienteController extends ControllerBase {
     excluirClienteCasoUso: ExcluirClienteCasoUso,
     atualizarClienteCasoUso: AtualizarClienteCasoUso
   ) {
-    super();
     this.buscarClientesCasoUso = buscarClientesCasoUso;
     this.cadastrarClienteCasoUso = cadastrarClienteCasoUso;
     this.excluirClienteCasoUso = excluirClienteCasoUso;
     this.atualizarClienteCasoUso = atualizarClienteCasoUso;
   }
 
-  @Get()
-  public async getClientes() {
-    const clientes = await this.buscarClientesCasoUso.executar(); // Busca todos
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      clientes.map((cliente) => cliente.paraJson())
-    );
+  @MessagePattern(MENSAGENS.BUSCAR_CLIENTES)
+  @UsePipes(new ValidatorPipe(BuscarClientesDtoSchema))
+  public async buscarClientes(@Payload() params: BuscarClientesDto = {}) {
+    const clientes = await this.buscarClientesCasoUso.executar(params);
+    return clientes.map((cliente) => cliente.paraJson());
   }
 
-  @Get('/:idCliente')
-  public async getPlano(
-    @Param('idCliente', ParseIntPipe)
-    id: number
-  ) {
-    const [cliente] = await this.buscarClientesCasoUso.executar(id);
-    return this.sucesso('Consulta realizada com sucesso!', cliente.paraJson());
-  }
-
-  @Post()
-  @UsePipes(new ValidatorPipe(CadastrarClienteDtoSchema, 'body'))
-  public async postCliente(@Body() dados: CadastrarClienteDto) {
+  @MessagePattern(MENSAGENS.CADASTRAR_CLIENTE)
+  @UsePipes(new ValidatorPipe(CadastrarClienteDtoSchema))
+  public async cadastrarCliente(@Payload() dados: CadastrarClienteDto) {
     const cliente = await this.cadastrarClienteCasoUso.executar(dados);
-    return this.sucesso('Cadastro efetuado com sucesso!', cliente.paraJson());
+    return cliente.paraJson();
   }
 
-  @Patch('/:idCliente')
-  @UsePipes(new ValidatorPipe(AtualizarClienteDtoSchema, 'body'))
-  public async patchCliente(
-    @Param('idCliente', ParseIntPipe) id: number,
-    @Body() dados: AtualizarClienteDto
-  ) {
-    const cliente = await this.atualizarClienteCasoUso.executar(id, dados);
-    return this.sucesso('Atualizção efetuada com sucesso!', cliente.paraJson());
+  @MessagePattern(MENSAGENS.ATUALIZAR_CLIENTE)
+  @UsePipes(new ValidatorPipe(AtualizarClienteDtoSchema))
+  public async atualizarCliente(@Payload() dados: AtualizarClienteDto) {
+    const cliente = await this.atualizarClienteCasoUso.executar(dados);
+    return cliente.paraJson();
   }
 
-  @Delete('/:idCliente')
-  public async deleteCliente(
-    @Param('idCliente', ParseIntPipe)
-    id: number
-  ) {
+  @MessagePattern(MENSAGENS.EXCLUIR_CLIENTE)
+  public async excluirCliente(@Payload() id: number) {
     await this.excluirClienteCasoUso.executar(id);
-    return this.sucesso('Exclusão efetuada com sucesso!');
+    return {
+      sucesso: true,
+      mensagem: 'Cliente excluído com sucesso',
+    };
   }
 }
 

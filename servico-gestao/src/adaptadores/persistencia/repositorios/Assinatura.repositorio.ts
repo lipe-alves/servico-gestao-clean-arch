@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import RepositorioBase from 'src/adaptadores/persistencia/base/RepositorioBase';
-import Assinatura from '../entidades/Assinatura.entidade';
 import { Repository } from 'typeorm';
+import { RepositorioBase } from '@gestao-internet/comuns/RepositorioBase';
+import Assinatura from '../entidades/Assinatura.entidade';
 
 @Injectable()
 class AssinaturaRepositorio extends RepositorioBase<Assinatura> {

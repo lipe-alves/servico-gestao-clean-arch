@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import ICasoUso from "src/aplicacao/interfaces/CasoUso.interface";
-import PlanoServico from "src/dominios/servicos/Plano.servico";
-import PlanoModelo from "src/dominios/modelos/Plano.modelo";
-import { AtualizarPlanoDto } from "src/aplicacao/dtos/planos/AtualizarPlano.dto";
+import { Injectable } from '@nestjs/common';
+import ICasoUso from 'src/aplicacao/interfaces/CasoUso.interface';
+import PlanoServico from 'src/dominios/servicos/Plano.servico';
+import PlanoModelo from 'src/dominios/modelos/Plano.modelo';
+import { AtualizarPlanoDto } from 'src/aplicacao/dtos/planos/AtualizarPlano.dto';
+import { PlanoNaoEncontradoException } from 'src/dominios/excecoes/plano';
 
 @Injectable()
 class AtualizarPlanoCasoUso implements ICasoUso {
@@ -12,15 +13,12 @@ class AtualizarPlanoCasoUso implements ICasoUso {
     this.planoServico = planoServico;
   }
 
-  public async executar(
-    id: number,
-    input: AtualizarPlanoDto,
-  ): Promise<PlanoModelo> {
-    const planoEncontrado = await this.planoServico.buscarPorId(id);
-    if (!planoEncontrado) throw new Error("Plano não encontrado");
-
+  public async executar({
+    id,
+    ...atualizacoes
+  }: AtualizarPlanoDto): Promise<PlanoModelo> {
     const plano = await this.planoServico.atualizar(id, {
-      ...input,
+      ...atualizacoes,
       data: new Date(),
     });
     return plano;

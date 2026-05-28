@@ -14,6 +14,9 @@ import AssinaturaEntidade from 'src/adaptadores/persistencia/entidades/Assinatur
 
 import { ClienteModule } from './Cliente.module';
 import { PlanoModule } from './Plano.module';
+import { FILAS } from '@gestao-internet/comuns/constantes';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   providers: [
@@ -30,6 +33,20 @@ import { PlanoModule } from './Plano.module';
     TypeOrmModule.forFeature([AssinaturaEntidade]),
     ClienteModule,
     PlanoModule,
+    ClientsModule.registerAsync([
+      {
+        name: FILAS.ASSINATURAS_ATIVAS,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+            queue: FILAS.ASSINATURAS_ATIVAS,
+          },
+        }),
+      },
+    ]),
   ],
 })
 class AssinaturaModule {}

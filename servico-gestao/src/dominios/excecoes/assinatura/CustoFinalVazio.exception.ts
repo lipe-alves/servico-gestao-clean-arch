@@ -1,6 +1,7 @@
-import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 
-class CustoFinalVazioException extends BadRequestException {
+class CustoFinalVazioException extends RpcException {
   public constructor(dadosExtras?: Record<string, any>) {
     super({
       statusCode: HttpStatus.BAD_REQUEST,

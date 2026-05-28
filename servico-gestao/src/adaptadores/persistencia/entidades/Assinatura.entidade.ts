@@ -40,13 +40,13 @@ class Assinatura {
   })
   status: AssinaturaStatus;
 
-  @Column('datetime')
+  @Column('date')
   inicioFidelidade: Date;
 
-  @Column('datetime')
+  @Column('date')
   fimFidelidade: Date;
 
-  @Column('datetime', { nullable: true })
+  @Column('date', { nullable: true })
   dataUltimoPagamento?: Date;
 
   @Column('decimal', { precision: 10, scale: 2 })

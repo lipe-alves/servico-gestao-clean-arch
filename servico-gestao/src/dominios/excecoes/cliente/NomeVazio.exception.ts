@@ -1,12 +1,13 @@
-import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 
-class NomeVazioException extends BadRequestException {
+class NomeVazioException extends RpcException {
   public constructor(dadosExtras?: Record<string, any>) {
     super({
       statusCode: HttpStatus.BAD_REQUEST,
       codigo: 'CLIENTE_NOME_VAZIO_ERROR',
       mensagem: 'O nome do cliente não pode estar vazio.',
-      extra: dadosExtras,
+      dados: dadosExtras,
     });
   }
 }

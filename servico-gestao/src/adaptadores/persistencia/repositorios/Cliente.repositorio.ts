@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import RepositorioBase from 'src/adaptadores/persistencia/base/RepositorioBase';
+import RepositorioBase from '@gestao-internet/comuns/RepositorioBase';
 import Cliente from '../entidades/Cliente.entidade';
 
 @Injectable()

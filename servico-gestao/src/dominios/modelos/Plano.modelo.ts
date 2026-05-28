@@ -1,5 +1,5 @@
-import ModeloBase from 'src/dominios/base/ModeloBase';
-import { Json } from 'src/comuns/tipos';
+import ModeloBase from '@gestao-internet/comuns/ModeloBase';
+import { Json } from '@gestao-internet/comuns/tipos';
 import PlanoEntidade from 'src/adaptadores/persistencia/entidades/Plano.entidade';
 
 class PlanoModelo extends ModeloBase<PlanoEntidade> {

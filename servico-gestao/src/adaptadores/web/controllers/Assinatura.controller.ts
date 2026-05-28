@@ -1,37 +1,33 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Param,
-  Patch,
-  ParseIntPipe,
-  UsePipes,
-} from '@nestjs/common';
+import { Controller, UsePipes } from '@nestjs/common';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { EVENTOS, MENSAGENS } from '@gestao-internet/comuns/constantes';
 
-import ControllerBase from 'src/adaptadores/web/base/ControllerBase';
+import { AssinaturaStatus } from 'src/adaptadores/persistencia/entidades/Assinatura.entidade';
 
 import BuscarAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/BuscarAssinaturas.casoUso';
+import {
+  BuscarAssinaturasDto,
+  BuscarAssinaturasDtoSchema,
+} from 'src/aplicacao/dtos/assinaturas/BuscarAssinaturas.dto';
+
 import CadastrarAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/CadastrarAssinatura.casoUso';
 import {
   CadastrarAssinaturaDto,
   CadastrarAssinaturaDtoSchema,
 } from 'src/aplicacao/dtos/assinaturas/CadastrarAssinatura.dto';
-import ExcluirAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/ExcluirAssinatura.casoUso';
+
 import AtualizarAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/AtualizarAssinatura.casoUso';
 import {
   AtualizarAssinaturaDto,
   AtualizarAssinaturaDtoSchema,
 } from 'src/aplicacao/dtos/assinaturas/AtualizarAssinatura.dto';
 
-import capitalizar from 'src/comuns/utils/capitalizar';
+import ExcluirAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/ExcluirAssinatura.casoUso';
 
-import { AssinaturaStatus } from 'src/adaptadores/persistencia/entidades/Assinatura.entidade';
 import ValidatorPipe from '../pipes/Validator.pipe';
 
-@Controller('/gestao/assinaturas')
-class AssinaturaController extends ControllerBase {
+@Controller()
+class AssinaturaController {
   private readonly buscarAssinaturasCasoUso: BuscarAssinaturaCasoUso;
   private readonly cadastrarAssinaturaCasoUso: CadastrarAssinaturaCasoUso;
   private readonly excluirAssinaturaCasoUso: ExcluirAssinaturaCasoUso;
@@ -43,126 +39,62 @@ class AssinaturaController extends ControllerBase {
     excluirAssinaturaCasoUso: ExcluirAssinaturaCasoUso,
     atualizarAssinaturaCasoUso: AtualizarAssinaturaCasoUso
   ) {
-    super();
     this.buscarAssinaturasCasoUso = buscarAssinaturasCasoUso;
     this.cadastrarAssinaturaCasoUso = cadastrarAssinaturaCasoUso;
     this.excluirAssinaturaCasoUso = excluirAssinaturaCasoUso;
     this.atualizarAssinaturaCasoUso = atualizarAssinaturaCasoUso;
   }
 
-  @Get()
-  public async getAssinaturas() {
-    const assinaturas = await this.buscarAssinaturasCasoUso.executar(); // Busca todos
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      assinaturas.map((assinatura) => assinatura.paraJson())
-    );
+  @MessagePattern(MENSAGENS.BUSCAR_ASSINATURAS)
+  @UsePipes(new ValidatorPipe(BuscarAssinaturasDtoSchema))
+  public async buscarAssinaturas(@Payload() params: BuscarAssinaturasDto) {
+    const assinaturas = await this.buscarAssinaturasCasoUso.executar(params);
+    return assinaturas.map((assinatura) => assinatura.paraJson());
   }
 
-  @Get('/todos')
-  public async getTodasAssinaturas() {
-    return this.getAssinaturas();
-  }
-
-  @Get('/ativo')
-  public async getAssinaturasAtivas() {
-    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
-      status: AssinaturaStatus.ATIVO,
-    });
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      assinaturas.map((assinatura) => assinatura.paraJson())
-    );
-  }
-
-  @Get('/cancelado')
-  public async getAssinaturasCanceladas() {
-    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
-      status: AssinaturaStatus.CANCELADO,
-    });
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      assinaturas.map((assinatura) => assinatura.paraJson())
-    );
-  }
-
-  @Get('/:idAssinatura')
-  public async getAssinaturaPorId(
-    @Param('idAssinatura', ParseIntPipe)
-    id: number
-  ) {
-    const [assinatura] = await this.buscarAssinaturasCasoUso.executar({
-      codigo: id,
-    });
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      assinatura.paraJson()
-    );
-  }
-
-  @Get('/cliente/:codCliente')
-  public async getAssinaturasCliente(
-    @Param('codCliente', ParseIntPipe)
-    codCliente: number
-  ) {
-    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
-      codCliente,
-    });
-
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      assinaturas.map((assinatura) => assinatura.paraJson())
-    );
-  }
-
-  @Get('/plano/:codPlano')
-  public async getAssinaturasPlano(
-    @Param('codPlano', ParseIntPipe)
-    codPlano: number
-  ) {
-    const assinaturas = await this.buscarAssinaturasCasoUso.executar({
-      codPlano,
-    });
-
-    return this.sucesso(
-      'Consulta realizada com sucesso!',
-      assinaturas.map((assinatura) => assinatura.paraJson())
-    );
-  }
-
-  @Post()
-  @UsePipes(new ValidatorPipe(CadastrarAssinaturaDtoSchema, 'body'))
-  public async postAssinatura(
-    @Body()
-    dados: CadastrarAssinaturaDto
-  ) {
+  @MessagePattern(MENSAGENS.CADASTRAR_ASSINATURA)
+  @UsePipes(new ValidatorPipe(CadastrarAssinaturaDtoSchema))
+  public async cadastrarAssinatura(@Payload() dados: CadastrarAssinaturaDto) {
     const assinatura = await this.cadastrarAssinaturaCasoUso.executar(dados);
-    return this.sucesso(
-      'Cadastro efetuado com sucesso!',
-      assinatura.paraJson()
-    );
+    return assinatura.paraJson();
   }
 
-  @Patch('/:idAssinatura')
-  @UsePipes(new ValidatorPipe(AtualizarAssinaturaDtoSchema, 'body'))
-  public async patchAssinatura(
-    @Param('idAssinatura', ParseIntPipe) id: number,
-    @Body() dados: AtualizarAssinaturaDto
-  ) {
-    const assinatura = await this.atualizarAssinaturaCasoUso.executar(
-      id,
-      dados
-    );
-    return this.sucesso(
-      'Atualizção efetuada com sucesso!',
-      assinatura.paraJson()
-    );
+  @MessagePattern(MENSAGENS.ATUALIZAR_ASSINATURA)
+  @UsePipes(new ValidatorPipe(AtualizarAssinaturaDtoSchema))
+  public async atualizarAssinatura(@Payload() dados: AtualizarAssinaturaDto) {
+    const assinatura = await this.atualizarAssinaturaCasoUso.executar(dados);
+    return assinatura.paraJson();
   }
 
-  @Delete('/:idAssinatura')
-  public async deleteAssinatura(@Param('idAssinatura', ParseIntPipe) id) {
+  @MessagePattern(MENSAGENS.EXCLUIR_ASSINATURA)
+  public async excluirAssinatura(@Payload() id: number) {
     await this.excluirAssinaturaCasoUso.executar(id);
-    return this.sucesso('Exclusão efetuada com sucesso!');
+    return {
+      sucesso: true,
+      mensagem: 'Assinatura excluída com sucesso',
+    };
+  }
+
+  @EventPattern(EVENTOS.PAGAMENTO_REGISTRADO)
+  public async aoPagarAssinatura(
+    @Payload()
+    dados: {
+      codAssinatura: number;
+      dataPagamento: Date;
+      valorPago: number;
+    }
+  ) {
+    console.log('Evento recebido: PAGAMENTO_REGISTRADO');
+    console.log('dados', dados);
+    try {
+      await this.atualizarAssinaturaCasoUso.executar({
+        id: dados.codAssinatura,
+        status: AssinaturaStatus.ATIVO,
+        dataUltimoPagamento: new Date(dados.dataPagamento),
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar assinatura:', error);
+    }
   }
 }
 

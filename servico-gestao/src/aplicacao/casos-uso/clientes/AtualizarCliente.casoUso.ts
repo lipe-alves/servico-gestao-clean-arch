@@ -13,8 +13,13 @@ class AtualizarClienteCasoUso implements ICasoUso {
     this.clienteServico = clienteServico;
   }
 
-  public async executar(id: number, input: AtualizarClienteDto): Promise<ClienteModelo> {
-    const cliente = await this.clienteServico.atualizar(id, { ...input });
+  public async executar({
+    id,
+    ...atualizacoes
+  }: AtualizarClienteDto): Promise<ClienteModelo> {
+    const cliente = await this.clienteServico.atualizar(id, {
+      ...atualizacoes,
+    });
     return cliente;
   }
 }

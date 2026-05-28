@@ -1,5 +1,5 @@
-import ModeloBase from 'src/dominios/base/ModeloBase';
-import { Json } from 'src/comuns/tipos';
+import ModeloBase from '@gestao-internet/comuns/ModeloBase';
+import { Json } from '@gestao-internet/comuns/tipos';
 import ClienteEntidade from 'src/adaptadores/persistencia/entidades/Cliente.entidade';
 
 class ClienteModelo extends ModeloBase<ClienteEntidade> {

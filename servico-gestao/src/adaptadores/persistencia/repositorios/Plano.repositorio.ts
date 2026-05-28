@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import RepositorioBase from 'src/adaptadores/persistencia/base/RepositorioBase';
-import Plano from '../entidades/Plano.entidade';
 import { Repository } from 'typeorm';
+import RepositorioBase from '@gestao-internet/comuns/RepositorioBase';
+import Plano from '../entidades/Plano.entidade';
 
 @Injectable()
 class PlanoRepositorio extends RepositorioBase<Plano> {

@@ -11,8 +11,6 @@ class ExcluirPlanoCasoUso implements ICasoUso {
   }
 
   public async executar(id: number): Promise<void> {
-    const planoEncontrado = await this.planoServico.buscarPorId(id);
-    if (!planoEncontrado) throw new Error("Plano não encontrado");
     await this.planoServico.excluir(id);
   }
 }

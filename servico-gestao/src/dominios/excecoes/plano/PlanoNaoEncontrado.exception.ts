@@ -1,6 +1,7 @@
-import { HttpStatus, NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 
-class PlanoNaoEncontradoException extends NotFoundException {
+class PlanoNaoEncontradoException extends RpcException {
   public constructor(dadosExtras?: Record<string, any>) {
     super({
       statusCode: HttpStatus.NOT_FOUND,

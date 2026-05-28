@@ -1,24 +1,31 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Param,
-  Patch,
-} from '@nestjs/common';
-import ControllerBase from 'src/adaptadores/web/base/ControllerBase';
+import { Controller, UsePipes } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { MENSAGENS } from '@gestao-internet/comuns/constantes';
 
 import BuscarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/BuscarPlanos.casoUso';
-import CadastrarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/CadastrarPlano.casoUso';
-import { validarCadastrarPlanoDto } from 'src/aplicacao/dtos/planos/CadastrarPlano.dto';
-import ExcluirPlanoCasoUso from 'src/aplicacao/casos-uso/planos/ExcluirPlano.casoUso';
-import AtualizarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/AtualizarPlano.casoUso';
-import { validarAtualizarPlanoDto } from 'src/aplicacao/dtos/planos/AtualizarPlano.dto';
-import ehNumerico from 'src/comuns/utils/ehNumerico';
+import {
+  BuscarPlanosDto,
+  BuscarPlanosDtoSchema,
+} from 'src/aplicacao/dtos/planos/BuscarPlanos.dto';
 
-@Controller('/gestao/planos')
-class PlanoController extends ControllerBase {
+import AtualizarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/AtualizarPlano.casoUso';
+import {
+  AtualizarPlanoDto,
+  AtualizarPlanoDtoSchema,
+} from 'src/aplicacao/dtos/planos/AtualizarPlano.dto';
+
+import CadastrarPlanoCasoUso from 'src/aplicacao/casos-uso/planos/CadastrarPlano.casoUso';
+import {
+  CadastrarPlanoDto,
+  CadastrarPlanoDtoSchema,
+} from 'src/aplicacao/dtos/planos/CadastrarPlano.dto';
+
+import ExcluirPlanoCasoUso from 'src/aplicacao/casos-uso/planos/ExcluirPlano.casoUso';
+
+import ValidatorPipe from '../pipes/Validator.pipe';
+
+@Controller()
+class PlanoController {
   private readonly buscarPlanosCasoUso: BuscarPlanoCasoUso;
   private readonly cadastrarPlanoCasoUso: CadastrarPlanoCasoUso;
   private readonly excluirPlanoCasoUso: ExcluirPlanoCasoUso;
@@ -30,92 +37,40 @@ class PlanoController extends ControllerBase {
     excluirPlanoCasoUso: ExcluirPlanoCasoUso,
     atualizarPlanoCasoUso: AtualizarPlanoCasoUso
   ) {
-    super();
     this.buscarPlanosCasoUso = buscarPlanosCasoUso;
     this.cadastrarPlanoCasoUso = cadastrarPlanoCasoUso;
     this.excluirPlanoCasoUso = excluirPlanoCasoUso;
     this.atualizarPlanoCasoUso = atualizarPlanoCasoUso;
   }
 
-  @Get()
-  public async getPlanos() {
-    try {
-      const planos = await this.buscarPlanosCasoUso.executar(); // Busca todos
-      return this.sucesso(
-        'Consulta realizada com sucesso!',
-        planos.map((plano) => plano.paraJson())
-      );
-    } catch (err) {
-      return this.falha(err);
-    }
+  @MessagePattern(MENSAGENS.BUSCAR_PLANOS)
+  @UsePipes(new ValidatorPipe(BuscarPlanosDtoSchema))
+  public async buscarPlanos(@Payload() params: BuscarPlanosDto = {}) {
+    const planos = await this.buscarPlanosCasoUso.executar(params);
+    return planos.map((plano) => plano.paraJson());
   }
 
-  @Get('/:idPlano')
-  public async getPlano(
-    @Param('idPlano')
-    id
-  ) {
-    try {
-      if (!ehNumerico(id)) throw new Error('O id deve ser um número!');
-
-      const [plano] = await this.buscarPlanosCasoUso.executar(id);
-      if (!plano) throw new Error('Plano não encontrado!');
-
-      return this.sucesso('Consulta realizada com sucesso!', plano.paraJson());
-    } catch (err) {
-      return this.falha(err);
-    }
+  @MessagePattern(MENSAGENS.CADASTRAR_PLANO)
+  @UsePipes(new ValidatorPipe(CadastrarPlanoDtoSchema))
+  public async cadastrarPlano(@Payload() dados: CadastrarPlanoDto) {
+    const plano = await this.cadastrarPlanoCasoUso.executar(dados);
+    return plano.paraJson();
   }
 
-  @Post()
-  public async postPlano(
-    @Body()
-    dados
-  ) {
-    try {
-      if (!validarCadastrarPlanoDto(dados)) {
-        throw new Error(
-          'Parâmetros incorretos. Verifique a documentação da API.'
-        );
-      }
-
-      const plano = await this.cadastrarPlanoCasoUso.executar(dados);
-      return this.sucesso('Cadastro efetuado com sucesso!', plano.paraJson());
-    } catch (err) {
-      return this.falha(err);
-    }
+  @MessagePattern(MENSAGENS.ATUALIZAR_PLANO)
+  @UsePipes(new ValidatorPipe(AtualizarPlanoDtoSchema))
+  public async atualizarPlano(@Payload() dados: AtualizarPlanoDto) {
+    const plano = await this.atualizarPlanoCasoUso.executar(dados);
+    return plano.paraJson();
   }
 
-  @Patch('/:idPlano')
-  public async patchPlano(@Param('idPlano') id, @Body() dados) {
-    try {
-      if (!ehNumerico(id)) throw new Error('O id deve ser um número!');
-
-      if (!validarAtualizarPlanoDto(dados)) {
-        throw new Error(
-          'Parâmetros incorretos. Verifique a documentação da API.'
-        );
-      }
-
-      const plano = await this.atualizarPlanoCasoUso.executar(id, dados);
-      return this.sucesso('Atualizção efetuada com sucesso!', plano.paraJson());
-    } catch (err) {
-      return this.falha(err);
-    }
-  }
-
-  @Delete('/:idPlano')
-  public async deletePlano(
-    @Param('idPlano')
-    id
-  ) {
-    try {
-      if (!ehNumerico(id)) throw new Error('O id deve ser um número!');
-      await this.excluirPlanoCasoUso.executar(id);
-      return this.sucesso('Exclusão efetuada com sucesso!');
-    } catch (err) {
-      return this.falha(err);
-    }
+  @MessagePattern(MENSAGENS.EXCLUIR_PLANO)
+  public async excluirPlano(@Payload() id: number) {
+    await this.excluirPlanoCasoUso.executar(id);
+    return {
+      sucesso: true,
+      mensagem: 'Plano excluído com sucesso',
+    };
   }
 }
 
