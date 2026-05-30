@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "0b5816dc-57e6-48b1-8057-278c74555b9b",
-    "name": "Serviço Gestão",
-    "description": "",
+    "name": "Serviço Gestão Internet",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52640523",
     "_collection_link": "https://go.postman.co/collection/52640523-0b5816dc-57e6-48b1-8057-278c74555b9b?source=collection_link"
@@ -89,7 +89,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"nome\": \"Plano Básico\",\r\n    \"custoMensal\": 79.90,\r\n    \"descricao\": \"Ideal para pequenos negócios\"\r\n}",
+              "raw": "{\r\n    \"nome\": \"Teste\",\r\n    \"custoMensal\": 79.90,\r\n    \"descricao\": \"Ideal para pequenos negócios\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -109,7 +109,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "1",
+                  "value": "4",
                   "description": "numérico"
                 }
               ]
@@ -135,7 +135,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "6",
+                  "value": "5",
                   "description": "numérico"
                 }
               ]
@@ -226,7 +226,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"nome\": \"Fulano Ciclano\",\r\n    \"email\": \"fulano@email.com\"\r\n}",
+              "raw": "{\r\n    \"nome\": \"Fulano Ciclano\",\r\n    \"email\": \"fulano.ciclano@email.com\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -304,7 +304,7 @@
               "variable": [
                 {
                   "key": "tipo",
-                  "value": "plano",
+                  "value": "cliente",
                   "description": "cliente ou plano"
                 },
                 {
@@ -335,8 +335,33 @@
               "variable": [
                 {
                   "key": "status",
-                  "value": "todos",
+                  "value": "ativo",
                   "description": "ativo, cancelado ou todos"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa de Assinatura por Código",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/gestao/assinaturas/:codigo",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "gestao",
+                "assinaturas",
+                ":codigo"
+              ],
+              "variable": [
+                {
+                  "key": "codigo",
+                  "value": "1"
                 }
               ]
             }
@@ -423,7 +448,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "11",
+                  "value": "2",
                   "description": "numérico"
                 }
               ]
@@ -432,12 +457,67 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Pesquisa de Assinaturas Ativas com Cache",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{URL}}/gestao/assinaturas/ativo",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "gestao",
+            "assinaturas",
+            "ativo"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Registrar Pagamento",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"dataPagamento\": \"2026-06-24\",\r\n    \"valorPago\": 50.00\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{URL}}/gestao/assinaturas/:codigo/pagar",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "gestao",
+            "assinaturas",
+            ":codigo",
+            "pagar"
+          ],
+          "variable": [
+            {
+              "key": "codigo",
+              "value": "1",
+              "description": "numérico"
+            }
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "variable": [
     {
       "key": "URL",
-      "value": "http://localhost:3000",
+      "value": "",
       "type": "default"
     }
   ]
