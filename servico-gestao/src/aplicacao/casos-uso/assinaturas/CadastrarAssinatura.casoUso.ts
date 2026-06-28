@@ -40,8 +40,6 @@ class CadastrarAssinaturaCasoUso implements ICasoUso {
       ...input,
       cliente,
       plano,
-      inicioFidelidade: new Date(input.inicioFidelidade),
-      fimFidelidade: new Date(input.fimFidelidade),
     });
 
     return assinatura;

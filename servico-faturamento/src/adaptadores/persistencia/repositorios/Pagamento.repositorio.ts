@@ -11,7 +11,7 @@ class PagamentoRepositorio extends RepositorioBase<Pagamento> {
     @InjectRepository(Pagamento)
     repo: Repository<Pagamento>
   ) {
-    super(Pagamento, repo);
+    super(Pagamento, repo as any);
   }
 }
 

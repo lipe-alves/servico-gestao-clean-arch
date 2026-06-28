@@ -4,7 +4,7 @@ import { CadastrarAssinaturaDtoSchema } from './CadastrarAssinatura.dto';
 export const AtualizarAssinaturaDtoSchema =
   CadastrarAssinaturaDtoSchema.partial().extend({
     id: z.coerce.number(),
-    dataUltimoPagamento: z.coerce.date().optional(),
+    inicioFidelidade: z.coerce.date(),
   });
 
 export type AtualizarAssinaturaDto = z.infer<

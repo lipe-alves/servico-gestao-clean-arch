@@ -10,7 +10,7 @@ class PlanoRepositorio extends RepositorioBase<Plano> {
     @InjectRepository(Plano)
     repo: Repository<Plano>
   ) {
-    super(Plano, repo);
+    super(Plano, repo as any);
   }
 }
 

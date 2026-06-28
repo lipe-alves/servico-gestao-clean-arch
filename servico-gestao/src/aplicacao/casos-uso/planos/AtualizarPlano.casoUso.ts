@@ -17,9 +17,10 @@ class AtualizarPlanoCasoUso implements ICasoUso {
     id,
     ...atualizacoes
   }: AtualizarPlanoDto): Promise<PlanoModelo> {
+    const [data] = new Date().toISOString().split('T');
     const plano = await this.planoServico.atualizar(id, {
       ...atualizacoes,
-      data: new Date(),
+      data,
     });
     return plano;
   }

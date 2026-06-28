@@ -2,12 +2,18 @@ import { IRepositorioBase, Operador, Direcao } from './RepositorioBase';
 import ModeloBase from './ModeloBase';
 
 interface IServicoBase<E extends object, M extends ModeloBase<E>> {
+  selecionar(colunas: Array<string | string[]>): IServicoBase<E, M>;
   onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean
+    valor?: string | number | boolean
   ): IServicoBase<E, M>;
   ou(): IServicoBase<E, M>;
+  tendo(
+    campo: string,
+    operador: Operador,
+    valor?: string | number | boolean
+  ): IServicoBase<E, M>;
   ordenarPor(campo: string, direcao: Direcao): IServicoBase<E, M>;
   buscar(): Promise<M[]>;
   buscarPorId(id: number): Promise<M | null>;
@@ -31,10 +37,15 @@ class ServicoBase<
     this.criarModelo = criarModelo;
   }
 
+  public selecionar(colunas: Array<string | string[]>): this {
+    this.repositorio.selecionar(colunas);
+    return this;
+  }
+
   public onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean
+    valor?: string | number | boolean
   ): this {
     this.repositorio.onde(campo, operador, valor);
     return this;
@@ -42,6 +53,15 @@ class ServicoBase<
 
   public ou(): this {
     this.repositorio.ou();
+    return this;
+  }
+
+  public tendo(
+    campo: string,
+    operador: Operador,
+    valor?: string | number | boolean
+  ): this {
+    this.repositorio.tendo(campo, operador, valor);
     return this;
   }
 

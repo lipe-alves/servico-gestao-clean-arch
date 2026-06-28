@@ -3,7 +3,6 @@ import ICasoUso from 'src/aplicacao/interfaces/CasoUso.interface';
 import ClienteServico from 'src/dominios/servicos/Cliente.servico';
 import ClienteModelo from 'src/dominios/modelos/Cliente.modelo';
 import { AtualizarClienteDto } from 'src/aplicacao/dtos/clientes/AtualizarCliente.dto';
-import validarEmail from 'src/comuns/utils/validarEmail';
 
 @Injectable()
 class AtualizarClienteCasoUso implements ICasoUso {

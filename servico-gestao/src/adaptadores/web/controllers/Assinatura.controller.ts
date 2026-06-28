@@ -24,21 +24,26 @@ import {
 
 import ExcluirAssinaturaCasoUso from 'src/aplicacao/casos-uso/assinaturas/ExcluirAssinatura.casoUso';
 
+import AssinaturaServico from 'src/dominios/servicos/Assinatura.servico';
+
 import ValidatorPipe from '../pipes/Validator.pipe';
 
 @Controller()
 class AssinaturaController {
+  private readonly assinaturaServico: AssinaturaServico;
   private readonly buscarAssinaturasCasoUso: BuscarAssinaturaCasoUso;
   private readonly cadastrarAssinaturaCasoUso: CadastrarAssinaturaCasoUso;
   private readonly excluirAssinaturaCasoUso: ExcluirAssinaturaCasoUso;
   private readonly atualizarAssinaturaCasoUso: AtualizarAssinaturaCasoUso;
 
   public constructor(
+    assinaturaServico: AssinaturaServico,
     buscarAssinaturasCasoUso: BuscarAssinaturaCasoUso,
     cadastrarAssinaturaCasoUso: CadastrarAssinaturaCasoUso,
     excluirAssinaturaCasoUso: ExcluirAssinaturaCasoUso,
     atualizarAssinaturaCasoUso: AtualizarAssinaturaCasoUso
   ) {
+    this.assinaturaServico = assinaturaServico;
     this.buscarAssinaturasCasoUso = buscarAssinaturasCasoUso;
     this.cadastrarAssinaturaCasoUso = cadastrarAssinaturaCasoUso;
     this.excluirAssinaturaCasoUso = excluirAssinaturaCasoUso;
@@ -80,17 +85,15 @@ class AssinaturaController {
     @Payload()
     dados: {
       codAssinatura: number;
-      dataPagamento: Date;
+      dataPagamento: string;
       valorPago: number;
     }
   ) {
     console.log('Evento recebido: PAGAMENTO_REGISTRADO');
     console.log('dados', dados);
     try {
-      await this.atualizarAssinaturaCasoUso.executar({
-        id: dados.codAssinatura,
-        status: AssinaturaStatus.ATIVO,
-        dataUltimoPagamento: new Date(dados.dataPagamento),
+      await this.assinaturaServico.atualizar(dados.codAssinatura, {
+        dataUltimoPagamento: dados.dataPagamento,
       });
     } catch (error) {
       console.error('Erro ao atualizar assinatura:', error);

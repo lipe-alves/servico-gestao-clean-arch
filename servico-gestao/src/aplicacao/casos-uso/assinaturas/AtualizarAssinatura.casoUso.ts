@@ -41,14 +41,15 @@ class AtualizarAssinaturaCasoUso implements ICasoUso {
       if (!plano) throw new PlanoNaoEncontradoException();
     }
 
+    let inicioFidelidade: string | undefined = undefined;
+    if (input.inicioFidelidade) {
+      const inicioFidelidadeData = new Date(input.inicioFidelidade);
+      [inicioFidelidade] = inicioFidelidadeData.toISOString().split('T');
+    }
+
     const assinatura = await this.assinaturaServico.atualizar(id, {
       ...input,
-      inicioFidelidade: input.inicioFidelidade
-        ? new Date(input.inicioFidelidade)
-        : undefined,
-      fimFidelidade: input.fimFidelidade
-        ? new Date(input.fimFidelidade)
-        : undefined,
+      inicioFidelidade,
     });
 
     return assinatura;

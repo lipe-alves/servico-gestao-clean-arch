@@ -24,9 +24,11 @@ class FaturamentoService extends ServicoBase<
   }
 
   public async registrarPagamento(dados: RegistrarPagamentoDto) {
+    const [dataPagamento] = dados.dataPagamento.toISOString().split("T");
+
     const pagamento = new PagamentoModelo({
       codAssinatura: dados.codAssinatura,
-      dataPagamento: dados.dataPagamento,
+      dataPagamento,
       valorPago: dados.valorPago,
     });
 

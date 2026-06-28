@@ -13,11 +13,12 @@ class CadastrarPlanoCasoUso implements ICasoUso {
   }
 
   public async executar(input: CadastrarPlanoDto): Promise<PlanoModelo> {
+    const [data] = new Date().toISOString().split('T');
     const plano = await this.planoServico.criar({
       nome: input.nome,
       custoMensal: input.custoMensal,
       descricao: input.descricao,
-      data: new Date(), // última atualização = data de criação
+      data, // última atualização = data de criação
     });
     return plano;
   }

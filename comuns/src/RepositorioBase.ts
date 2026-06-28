@@ -1,21 +1,38 @@
-import { Repository, SelectQueryBuilder, ObjectLiteral } from "typeorm";
+import { Repository, SelectQueryBuilder, ObjectLiteral } from 'typeorm';
 
-type Operador = "=" | "<=" | "<" | ">=" | ">" | "in" | "not in";
-type Direcao = "asc" | "desc";
+type OperadorValores =
+  | '='
+  | '<='
+  | '<'
+  | '>='
+  | '>'
+  | '!='
+  | 'in'
+  | 'not in'
+  | 'is null'
+  | 'is not null';
+type Operador = OperadorValores | Uppercase<OperadorValores>;
+type Direcao = 'asc' | 'desc';
 
 interface IRepositorioBase<T> {
+  selecionar(colunas: Array<string | string[]>): IRepositorioBase<T>;
   onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean,
+    valor?: string | number | boolean
   ): IRepositorioBase<T>;
   ou(): IRepositorioBase<T>;
+  tendo(
+    campo: string,
+    operador: Operador,
+    valor?: string | number | boolean
+  ): IRepositorioBase<T>;
   ordenarPor(campo: string, direcao: Direcao): IRepositorioBase<T>;
   buscar(): Promise<T[]>;
   buscarPorId(id: number): Promise<T | null>;
   atualizar(id: number, dados: Partial<T>): Promise<T>;
   excluir(id: number): Promise<void>;
-  criar(dados: Omit<T, "codigo">): Promise<T>;
+  criar(dados: Omit<T, 'codigo'>): Promise<T>;
 }
 
 class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
@@ -30,19 +47,36 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
     this.queryBuilder = this.repositorio.createQueryBuilder(this.alias);
   }
 
+  public selecionar(colunas: Array<string | string[]>): IRepositorioBase<T> {
+    this.queryBuilder.select();
+
+    for (let coluna of colunas) {
+      let apelido: string | undefined = undefined;
+
+      if (Array.isArray(coluna)) {
+        [coluna, apelido] = coluna;
+      }
+
+      this.queryBuilder.addSelect(coluna, apelido);
+    }
+
+    return this;
+  }
+
   public onde(
     campo: string,
     operador: Operador,
-    valor: string | number | boolean,
+    valor?: string | number | boolean
   ): IRepositorioBase<T> {
     const parametro = `${campo}_${Math.random().toString(36).substring(2, 8)}`;
     const condicao = this.montarCondicao(campo, operador, parametro);
+    const parameters = valor ? { [parametro]: valor } : undefined;
 
     if (this.orMode) {
-      this.queryBuilder.orWhere(condicao, { [parametro]: valor });
+      this.queryBuilder.orWhere(condicao, parameters);
       this.orMode = false;
     } else {
-      this.queryBuilder.andWhere(condicao, { [parametro]: valor });
+      this.queryBuilder.andWhere(condicao, parameters);
     }
 
     return this;
@@ -53,10 +87,29 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
     return this;
   }
 
+  public tendo(
+    campo: string,
+    operador: Operador,
+    valor?: string | number | boolean
+  ): IRepositorioBase<T> {
+    const parametro = `${campo}_${Math.random().toString(36).substring(2, 8)}`;
+    const condicao = this.montarCondicao(campo, operador, parametro);
+    const parameters = valor ? { [parametro]: valor } : undefined;
+
+    if (this.orMode) {
+      this.queryBuilder.orHaving(condicao, parameters);
+      this.orMode = false;
+    } else {
+      this.queryBuilder.andHaving(condicao, parameters);
+    }
+
+    return this;
+  }
+
   public ordenarPor(campo: string, direcao: Direcao): IRepositorioBase<T> {
     this.queryBuilder.addOrderBy(
       `${this.alias}.${campo}`,
-      direcao.toUpperCase() as "ASC" | "DESC",
+      direcao.toUpperCase() as 'ASC' | 'DESC'
     );
     return this;
   }
@@ -78,7 +131,7 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
     this.resetar();
     const atualizado = await this.buscarPorId(id);
     if (!atualizado)
-      throw new Error("Registro não encontrado após atualização.");
+      throw new Error('Registro não encontrado após atualização.');
     return atualizado;
   }
 
@@ -100,20 +153,28 @@ class RepositorioBase<T extends ObjectLiteral> implements IRepositorioBase<T> {
   private montarCondicao(
     campo: string,
     operador: Operador,
-    parametro: string,
+    parametro?: string
   ): string {
     const coluna = `${this.alias}.${campo}`;
     switch (operador) {
-      case "=":
-      case "<=":
-      case "<":
-      case ">=":
-      case ">":
+      case '=':
+      case '<=':
+      case '<':
+      case '>=':
+      case '>':
         return `${coluna} ${operador} :${parametro}`;
-      case "in":
+      case 'IN':
+      case 'in':
         return `${coluna} IN (:...${parametro})`;
-      case "not in":
+      case 'NOT IN':
+      case 'not in':
         return `${coluna} NOT IN (:...${parametro})`;
+      case 'IS NOT NULL':
+      case 'is not null':
+        return `${coluna} IS NOT NULL`;
+      case 'IS NULL':
+      case 'is null':
+        return `${coluna} IS NULL`;
       default:
         throw new Error(`Operador inválido: ${operador}`);
     }

@@ -15,7 +15,7 @@ class PagamentoModelo extends ModeloBase<PagamentoEntidade> {
     return this.dados.dataPagamento;
   }
 
-  public set dataPagamento(dataPagamento: Date) {
+  public set dataPagamento(dataPagamento: string) {
     this.dados.dataPagamento = dataPagamento;
   }
 

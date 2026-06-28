@@ -9,9 +9,10 @@ import Plano from './Plano.entidade';
 import Cliente from './Cliente.entidade';
 
 enum AssinaturaStatus {
-  TODOS = 'Todos',
-  CANCELADO = 'Cancelado',
-  ATIVO = 'Ativo',
+  Cancelado = 'Cancelado',
+  Ativo = 'Ativo',
+  Vencido = 'Vencido',
+  Pendente = 'Pendente',
 }
 
 @Entity()
@@ -33,21 +34,17 @@ class Assinatura {
   @JoinColumn({ name: 'codPlano' })
   plano: Plano;
 
-  @Column({
-    type: 'enum',
-    enum: AssinaturaStatus,
-    default: AssinaturaStatus.ATIVO
-  })
-  status: AssinaturaStatus;
+  @Column('decimal', { precision: 2, scale: 0 })
+  diaVencimento: number;
 
   @Column('date')
-  inicioFidelidade: Date;
+  inicioFidelidade: string;
 
   @Column('date')
-  fimFidelidade: Date;
+  fimFidelidade: string;
 
   @Column('date', { nullable: true })
-  dataUltimoPagamento?: Date;
+  dataUltimoPagamento?: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   custoFinal: number;

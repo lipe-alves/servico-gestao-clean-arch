@@ -6,7 +6,7 @@ class Pagamento {
   codAssinatura: number;
 
   @PrimaryColumn('date')
-  dataPagamento: Date;
+  dataPagamento: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   valorPago: number;

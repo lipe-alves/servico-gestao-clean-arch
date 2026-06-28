@@ -7,9 +7,11 @@ export const BuscarAssinaturasDtoSchema = z.object({
   codCliente: z.coerce.number().optional(),
   status: z
     .enum([
-      AssinaturaStatus.TODOS,
-      AssinaturaStatus.CANCELADO,
-      AssinaturaStatus.ATIVO,
+      'Todos',
+      AssinaturaStatus.Cancelado,
+      AssinaturaStatus.Ativo,
+      AssinaturaStatus.Pendente,
+      AssinaturaStatus.Vencido,
     ])
     .optional(),
 });

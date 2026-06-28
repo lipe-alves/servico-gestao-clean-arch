@@ -4,7 +4,7 @@ Aluno: Felipe Alves
 
 Disciplina: Desenvolvimento de Sistemas Backend
 
-Data: 28 de Maio de 2026
+Data: 27 de Junho de 2026
 
 ---
 
@@ -14,17 +14,23 @@ Sistema de gestão de assinaturas de planos de internet implementado com arquite
 
 ---
 
-## 1. Diagrama de Estrutura (UML e Módulos)
+## 1. Diagramas de Estrutura (UML e Módulos)
 
 A arquitetura segue um fluxo de dependências de fora para dentro, garantindo que o núcleo (Domínio) seja agnóstico a frameworks e infraestrutura.
 
 Segue abaixo um diagrama do fluxo de dados:
 
-![Diagrama de Estrutura](./imagens/fluxo-de-dados-gestao.png)
+![Diagrama de Fluxo de Dados](./imagens/fluxo-de-dados-gestao.png)
 
 A comunicação entre a camada de domínio e os repositórios para a manipulação dos dados ocorre via interfaces, garantindo que o domínio seja agnóstico às implementações.
 
 O mesmo ocorre para qualquer comunicação entre camadas mais internas e externas, sempre via interfaces (ex: Aplicação -> Adaptadores).
+
+O Serviço de Gestão pode ser entendido como o núcleo da aplicação, pois gerencia os cadastros (CRUDs - Create, Read, Update e Delete) das 3 principais entidades do sistema: Clientes, Planos e Assinaturas.
+
+Segue abaixo um diagrama representando a arquitetura do serviço:
+
+![Diagrama da Arquitetura](./imagens/arquitetura-servico-gestao.png)
 
 ### Organização de Módulos
 
@@ -79,14 +85,14 @@ Além da estrutura de camadas, foram aplicados:
 
 ## Arquitetura
 
-### 1 Componentes
+### 1. Componentes
 
 - **API Gateway (3000)**: Roteamento HTTP
 - **Serviço Gestão**: Clientes, planos e assinaturas
 - **Serviço Faturamento**: Pagamentos e cobranças
 - **Serviço Planos Ativos**: Consulta com cache local
 
-### 2 Comunicação
+### 2. Comunicação
 
 ```
 Cliente HTTP → API Gateway → RabbitMQ → Microsserviços → MySQL
@@ -119,7 +125,7 @@ E gerencia as seguintes mensagens (@MessagePattern):
 - **ATUALIZAR_PLANO**: 'atualizar-plano';
 - **EXCLUIR_PLANO**: 'excluir-plano'.
 
-### 3 Estrutura de Camadas
+### 3. Estrutura de Camadas
 
 ```
 Adaptadores (Controllers, Middlewares)

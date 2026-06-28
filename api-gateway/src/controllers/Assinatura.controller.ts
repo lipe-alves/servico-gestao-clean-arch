@@ -54,8 +54,15 @@ class AssinaturaController extends ControllerBase {
 
   @Get()
   public async getAssinaturas() {
-    const observavel = this.filaGestao.send(MENSAGENS.BUSCAR_ASSINATURAS, {});
+    let observavel = this.filaGestao.send(MENSAGENS.BUSCAR_ASSINATURAS, {});
     const assinaturas = await lastValueFrom(observavel);
+
+    observavel = this.filaAssinaturasAtivas.send(
+      MENSAGENS.CACHEAR_ASSINATURA_ATIVA,
+      assinaturas.filter((assinatura: any) => assinatura.status === 'Ativo')
+    );
+    await lastValueFrom(observavel);
+
     return this.sucesso('Consulta realizada com sucesso!', assinaturas);
   }
 
@@ -101,6 +108,26 @@ class AssinaturaController extends ControllerBase {
     console.log('GET /gestao/assinaturas/cancelado');
     const observavel = this.filaGestao.send(MENSAGENS.BUSCAR_ASSINATURAS, {
       status: 'Cancelado',
+    });
+    const assinaturas = await lastValueFrom(observavel);
+    return this.sucesso('Consulta realizada com sucesso!', assinaturas);
+  }
+
+  @Get('/vencido')
+  public async getAssinaturasVencidas() {
+    console.log('GET /gestao/assinaturas/vencido');
+    const observavel = this.filaGestao.send(MENSAGENS.BUSCAR_ASSINATURAS, {
+      status: 'Vencido',
+    });
+    const assinaturas = await lastValueFrom(observavel);
+    return this.sucesso('Consulta realizada com sucesso!', assinaturas);
+  }
+
+  @Get('/pendente')
+  public async getAssinaturasPendentes() {
+    console.log('GET /gestao/assinaturas/pendente');
+    const observavel = this.filaGestao.send(MENSAGENS.BUSCAR_ASSINATURAS, {
+      status: 'Pendente',
     });
     const assinaturas = await lastValueFrom(observavel);
     return this.sucesso('Consulta realizada com sucesso!', assinaturas);

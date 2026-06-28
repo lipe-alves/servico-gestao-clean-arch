@@ -9,6 +9,7 @@ async function setup() {
   await instalarBancoDeDados();
   console.log('Configuracao do banco de dados concluida!');
 
+  console.log('Instalando dependencias...');
   await instalarDependencias();
   console.log('Dependencias instaladas com sucesso!');
 

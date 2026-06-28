@@ -10,7 +10,7 @@ class AssinaturaRepositorio extends RepositorioBase<Assinatura> {
     @InjectRepository(Assinatura)
     repo: Repository<Assinatura>
   ) {
-    super(Assinatura, repo);
+    super(Assinatura, repo as any);
   }
 }
 

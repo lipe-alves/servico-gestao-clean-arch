@@ -10,7 +10,7 @@ class ClienteRepositorio extends RepositorioBase<Cliente> {
     @InjectRepository(Cliente)
     repo: Repository<Cliente>
   ) {
-    super(Cliente, repo);
+    super(Cliente, repo as any);
   }
 }
 

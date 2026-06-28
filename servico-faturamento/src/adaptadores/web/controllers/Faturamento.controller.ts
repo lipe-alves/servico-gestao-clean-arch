@@ -21,7 +21,10 @@ class FaturamentoController {
         'servico-faturamento - MENSAGENS.REGISTRAR_PAGAMENTO recebido',
         dados
       );
-      await this.faturamentoServico.registrarPagamento(dados);
+      await this.faturamentoServico.registrarPagamento({
+        ...dados,
+        dataPagamento: new Date(dados.dataPagamento),
+      });
       return {
         sucesso: true,
         mensagem: 'Pagamento registrado com sucesso!',

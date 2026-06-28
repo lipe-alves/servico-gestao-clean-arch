@@ -43,7 +43,10 @@ class BuscarAssinaturasCasoUso implements ICasoUso {
         if (!plano) throw new PlanoNaoEncontradoException();
       }
 
-      const assinaturas = await this.assinaturaServico.buscar(params);
+      const assinaturas = await this.assinaturaServico.buscar({
+        ...params,
+        status: params.status === 'Todos' ? undefined : params.status,
+      });
       return assinaturas;
     } else {
       const assinatura = await this.assinaturaServico.buscarPorId(

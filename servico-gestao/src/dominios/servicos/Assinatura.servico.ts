@@ -14,6 +14,11 @@ import {
   CustoFinalNegativoException,
 } from '../excecoes/assinatura';
 
+type CriarAssinaturaDto = Omit<
+  AssinaturaEntidade,
+  'codigo' | 'inicioFidelidade' | 'fimFidelidade' | 'dataUltimoPagamento'
+>;
+
 @Injectable()
 @Dependencies(AssinaturaRepositorio, FILAS.ASSINATURAS_ATIVAS)
 class AssinaturaServico extends ServicoBase<
@@ -35,10 +40,6 @@ class AssinaturaServico extends ServicoBase<
     codPlano?: number;
     codCliente?: number;
   }): Promise<AssinaturaModelo[]> {
-    if (params.status && params.status !== AssinaturaStatus.TODOS) {
-      this.onde('status', '=', params.status);
-    }
-
     if (params.codPlano) {
       this.onde('codPlano', '=', params.codPlano);
     }
@@ -47,7 +48,15 @@ class AssinaturaServico extends ServicoBase<
       this.onde('codCliente', '=', params.codCliente);
     }
 
-    return super.buscar();
+    let assinaturas = await super.buscar();
+
+    if (params.status) {
+      assinaturas = assinaturas.filter(
+        (assinatura) => assinatura.status === params.status
+      );
+    }
+
+    return assinaturas;
   }
 
   public async atualizar(
@@ -65,17 +74,31 @@ class AssinaturaServico extends ServicoBase<
       }
     }
 
-    const assinaturaAtualizada = await super.atualizar(id, dados);
+    if (dados.inicioFidelidade) {
+      const inicioFidelidadeData = new Date(dados.inicioFidelidade);
+      const fimFidelidadeData = new Date(inicioFidelidadeData.getTime());
+      fimFidelidadeData.setFullYear(fimFidelidadeData.getFullYear() + 1);
 
-    if (dados.status && dados.status !== assinatura.status) {
-      if (dados.status === AssinaturaStatus.ATIVO) {
+      const [inicioFidelidade] = inicioFidelidadeData.toISOString().split('T');
+      const [fimFidelidade] = fimFidelidadeData.toISOString().split('T');
+
+      dados.inicioFidelidade = inicioFidelidade;
+      dados.fimFidelidade = fimFidelidade;
+    }
+
+    const statusAntes = assinatura.status;
+    const assinaturaAtualizada = await super.atualizar(id, dados);
+    const statusAtual = assinaturaAtualizada.status;
+
+    if (statusAtual !== statusAntes) {
+      if (statusAtual === AssinaturaStatus.Ativo) {
         await lastValueFrom(
           this.filaAssinaturasAtivas.emit(
             EVENTOS.ASSINATURA_ATIVA,
             assinaturaAtualizada.paraJson()
           )
         );
-      } else if (dados.status === AssinaturaStatus.CANCELADO) {
+      } else if (statusAtual === AssinaturaStatus.Cancelado) {
         await lastValueFrom(
           this.filaAssinaturasAtivas.emit(
             EVENTOS.ASSINATURA_CANCELADA,
@@ -95,26 +118,33 @@ class AssinaturaServico extends ServicoBase<
     return assinaturaAtualizada;
   }
 
-  public async criar(
-    dados: Omit<AssinaturaEntidade, 'codigo' | 'dataUltimoPagamento'>
-  ): Promise<AssinaturaModelo> {
+  public async criar(dados: CriarAssinaturaDto): Promise<AssinaturaModelo> {
     if (dados.custoFinal <= 0) {
       throw new CustoFinalNegativoException();
     }
 
+    const inicioFidelidadeData = new Date();
+    const fimFidelidadeData = new Date(inicioFidelidadeData.getTime());
+    fimFidelidadeData.setFullYear(fimFidelidadeData.getFullYear() + 1);
+
+    const [inicioFidelidade] = inicioFidelidadeData.toISOString().split('T');
+    const [fimFidelidade] = fimFidelidadeData.toISOString().split('T');
+
     const assinatura = await super.criar({
       ...dados,
-      dataUltimoPagamento: null,
+      inicioFidelidade,
+      fimFidelidade,
+      dataUltimoPagamento: inicioFidelidade,
     });
 
-    if (assinatura.status === AssinaturaStatus.ATIVO) {
+    if (assinatura.status === AssinaturaStatus.Ativo) {
       await lastValueFrom(
         this.filaAssinaturasAtivas.emit(
           EVENTOS.ASSINATURA_ATIVA,
           assinatura.paraJson()
         )
       );
-    } else if (assinatura.status === AssinaturaStatus.CANCELADO) {
+    } else if (assinatura.status === AssinaturaStatus.Cancelado) {
       await lastValueFrom(
         this.filaAssinaturasAtivas.emit(
           EVENTOS.ASSINATURA_CANCELADA,

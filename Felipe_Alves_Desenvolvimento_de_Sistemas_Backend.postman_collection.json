@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "0b5816dc-57e6-48b1-8057-278c74555b9b",
     "name": "Serviço Gestão Internet",
-    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "description": "",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52640523",
     "_collection_link": "https://go.postman.co/collection/52640523-0b5816dc-57e6-48b1-8057-278c74555b9b?source=collection_link"
@@ -47,7 +47,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "1",
+                  "value": "5",
                   "description": "numérico"
                 }
               ]
@@ -135,7 +135,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "5",
+                  "value": "1",
                   "description": "numérico"
                 }
               ]
@@ -246,7 +246,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "11",
+                  "value": "1",
                   "description": "numérico"
                 }
               ]
@@ -272,7 +272,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "11",
+                  "value": "1",
                   "description": "numérico"
                 }
               ]
@@ -335,8 +335,8 @@
               "variable": [
                 {
                   "key": "status",
-                  "value": "ativo",
-                  "description": "ativo, cancelado ou todos"
+                  "value": "vencido",
+                  "description": "ativo, cancelado, vencido, pendente ou todos"
                 }
               ]
             }
@@ -361,7 +361,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "1"
+                  "value": "10"
                 }
               ]
             }
@@ -375,7 +375,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"codCliente\": 1,\r\n    \"codPlano\": 1,\r\n    \"status\": \"Ativo\",\r\n    \"inicioFidelidade\": \"2025-01-10T03:00:00.000Z\",\r\n    \"fimFidelidade\": \"2026-01-10T03:00:00.000Z\",\r\n    \"custoFinal\": 49.90,\r\n    \"descricao\": \"Assinatura anual do plano básico\"\r\n}",
+              "raw": "{\r\n    \"codCliente\": 1,\r\n    \"codPlano\": 1,\r\n    \"custoFinal\": 49.90,\r\n    \"diaVencimento\": 31,\r\n    \"descricao\": \"Assinatura anual do plano básico\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -402,7 +402,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"codCliente\": 1,\r\n    \"codPlano\": 1,\r\n    \"status\": \"Ativo\",\r\n    \"inicioFidelidade\": \"2025-01-10T03:00:00.000Z\",\r\n    \"fimFidelidade\": \"2026-01-10T03:00:00.000Z\",\r\n    \"custoFinal\": 49.90,\r\n    \"descricao\": \"Assinatura anual do plano básico\"\r\n}",
+              "raw": "{\r\n    \"codCliente\": 1,\r\n    \"codPlano\": 1,\r\n    \"inicioFidelidade\": \"2026-01-01\",\r\n    \"custoFinal\": 49.90,\r\n    \"descricao\": \"Assinatura anual do plano básico\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -422,7 +422,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "11",
+                  "value": "1",
                   "description": "numérico"
                 }
               ]
@@ -448,7 +448,7 @@
               "variable": [
                 {
                   "key": "codigo",
-                  "value": "2",
+                  "value": "1",
                   "description": "numérico"
                 }
               ]
@@ -484,7 +484,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"dataPagamento\": \"2026-06-24\",\r\n    \"valorPago\": 50.00\r\n}",
+          "raw": "{\r\n    \"dataPagamento\": \"2026-06-11\",\r\n    \"valorPago\": 50.00\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -505,7 +505,7 @@
           "variable": [
             {
               "key": "codigo",
-              "value": "1",
+              "value": "10",
               "description": "numérico"
             }
           ]

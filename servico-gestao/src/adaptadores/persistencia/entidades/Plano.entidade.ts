@@ -11,8 +11,8 @@ class Plano {
   @Column('decimal', { precision: 10, scale: 2 })
   custoMensal: number;
 
-  @Column('datetime')
-  data: Date;
+  @Column('date')
+  data: string;
 
   @Column({ type: 'text' })
   descricao: string;

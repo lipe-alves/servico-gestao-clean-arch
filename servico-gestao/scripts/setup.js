@@ -9,6 +9,7 @@ async function setup() {
   await instalarBancoDeDados();
   console.log('Configuracao do banco de dados concluida!');
 
+  console.log('Instalando dependencias...');
   await instalarDependencias();
   console.log('Dependencias instaladas com sucesso!');
 
@@ -40,38 +41,32 @@ function instalarBancoDeDados() {
 
 function instalarDependencias() {
   return new Promise((resolve, reject) => {
-    exec(
-      'npm install',
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(`Erro ao instalar dependencias: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          reject(`Erro na instalacao de dependencias: ${stderr}`);
-          return;
-        }
-        resolve('Dependencias instaladas com sucesso!');
+    exec('npm install', (error, stdout, stderr) => {
+      if (error) {
+        reject(`Erro ao instalar dependencias: ${error.message}`);
+        return;
       }
-    );
+      if (stderr) {
+        reject(`Erro na instalacao de dependencias: ${stderr}`);
+        return;
+      }
+      resolve('Dependencias instaladas com sucesso!');
+    });
   });
 }
 
 function buildSistema() {
   return new Promise((resolve, reject) => {
-    exec(
-      'npm run build',
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(`Erro ao buildar o sistema: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          reject(`Erro no build do sistema: ${stderr}`);
-          return;
-        }
-        resolve('Build do sistema concluido!');
+    exec('npm run build', (error, stdout, stderr) => {
+      if (error) {
+        reject(`Erro ao buildar o sistema: ${error.message}`);
+        return;
       }
-    );
+      if (stderr) {
+        reject(`Erro no build do sistema: ${stderr}`);
+        return;
+      }
+      resolve('Build do sistema concluido!');
+    });
   });
 }

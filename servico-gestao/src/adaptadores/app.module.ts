@@ -25,6 +25,7 @@ import { AssinaturaModule, ClienteModule, PlanoModule } from './modulos';
         database: configService.getOrThrow<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entidade{.ts,.js}'],
         synchronize: false,
+        logging: true,
       }),
     }),
     TypeOrmModule.forFeature([

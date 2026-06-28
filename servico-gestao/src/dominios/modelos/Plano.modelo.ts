@@ -4,7 +4,7 @@ import PlanoEntidade from 'src/adaptadores/persistencia/entidades/Plano.entidade
 
 class PlanoModelo extends ModeloBase<PlanoEntidade> {
   public get codigo() {
-    return this.dados.codigo;
+    return Number(this.dados.codigo);
   }
 
   public set codigo(codigo: number) {
@@ -20,7 +20,7 @@ class PlanoModelo extends ModeloBase<PlanoEntidade> {
   }
 
   public get custoMensal() {
-    return this.dados.custoMensal;
+    return Number(this.dados.custoMensal);
   }
 
   public set custoMensal(custoMensal: number) {
@@ -31,7 +31,7 @@ class PlanoModelo extends ModeloBase<PlanoEntidade> {
     return this.dados.data;
   }
 
-  public set data(data: Date) {
+  public set data(data: string) {
     this.dados.data = data;
   }
 
